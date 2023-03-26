@@ -191,10 +191,14 @@ impl Board {
                                         moves.push(m);
                                     }
                                 } else if i == if p.color { 3 } else { 4 } {
-                                    if let Some(p) = self.history[self.history.len() - 2].pos[if p.color { 1 } else { 6 }][j - 1].piece {
-                                        if p.color == !self.turn {
-                                            m.special_req = Some(special_req);
-                                            moves.push(m); 
+                                    if let Some(p) = self.pos[i][j + 1].piece {
+                                        if p._type == PieceType::Pawn && p.color != self.turn {
+                                            if let Some(p_h) = self.history[self.history.len() - 2].pos[if p.color { 1 } else { 6 }][j - 1].piece {
+                                                if p_h.color == !self.turn {
+                                                    m.special_req = Some(special_req);
+                                                    moves.push(m); 
+                                                }
+                                            }
                                         }
                                     }  
                                 }

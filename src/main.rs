@@ -141,8 +141,7 @@ impl Board {
         match self.pos[i][j].piece {
             Some(p) if p.color == self.turn  => match p._type {
                 PieceType::Pawn => {
-                    if if p.color { i < 7 } else { i > 0 } {
-                        match self.create_move(self.pos[i][j], if p.color { MOVE_UP } else { MOVE_DOWN }, 1, None) {
+                    match self.create_move(self.pos[i][j], if p.color { MOVE_UP } else { MOVE_DOWN }, 1, None) {
                             Some(m) => {
                                 if m.des.piece == None  {
                                     moves.push(m);
@@ -191,9 +190,9 @@ impl Board {
                                         moves.push(m);
                                     }
                                 } else if i == if p.color { 3 } else { 4 } {
-                                    if let Some(p) = self.pos[i][j + 1].piece {
+                                    if let Some(p) = self.pos[i][j - 1].piece {
                                         if p._type == PieceType::Pawn && p.color != self.turn {
-                                            if let Some(p_h) = self.history[self.history.len() - 2].pos[if p.color { 1 } else { 6 }][j - 1].piece {
+                                            if let Some(p_h) = &self.history[self.history.len() - 2].pos[if p.color { 6 } else { 1 }][j - 1].piece {
                                                 if p_h.color == !self.turn {
                                                     m.special_req = Some(special_req);
                                                     moves.push(m); 
@@ -209,12 +208,30 @@ impl Board {
                         fn special_req(board: &mut Board, pos: &Square, des: &Square) {
                             board.pos[(des.pos.0 as i8 + if pos.piece.unwrap().color { 1 } else { -1 }) as usize][des.pos.1].piece = None;
                         }
-                    } else {
-                        unreachable!("trying to move pawn on 8 rank (i = 7)");
-                    }
                 },
                 PieceType::Knight => {
-                    todo!()
+                    for c in [
+                        (MOVE_UP , MOVE_UP_RIGHT), (MOVE_UP, MOVE_UP_LEFT),
+                        (MOVE_DOWN, MOVE_DOWN_RIGHT), (MOVE_DOWN, MOVE_DOWN_LEFT),
+                        (MOVE_RIGHT, MOVE_UP_LEFT), (MOVE_RIGHT, MOVE_DOWN_LEFT),
+                        (MOVE_LEFT, MOVE_UP_RIGHT), (MOVE_LEFT, MOVE_DOWN_RIGHT)
+                    ] {
+                        match self.create_move(self.pos[i][j], (c.0.0 + c.1.0, c.0.1 + c.1.1), 1, None) {
+                            Some(m) => {
+                                match m.des.piece {
+                                  Some(p) => {
+                                    if p.color != self.turn {
+                                        moves.push(m);
+                                    }
+                                  },
+                                  None => {
+                                    moves.push(m)
+                                  }
+                                }
+                            },
+                            None => {}
+                        }
+                    }
                 },
                 PieceType::Bishop => {
                     todo!()
@@ -275,6 +292,7 @@ fn main() {
     dm(&mut my_board, 4, 0, 1);
     dm(&mut my_board, 1, 0, 1);
     dm(&mut my_board, 3, 1, 1);
+    dm(&mut my_board, 0, 1, 0);
 }
 
 fn dm(board: &mut Board, i: usize, j: usize, num: usize) {

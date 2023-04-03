@@ -42,136 +42,33 @@ impl Board {
     fn new() -> Board {
         let mut board = Board::empty();
 
-        board.pos[0] = [
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Rook,
-                    color: false,
-                }),
-                pos: board.pos[0][0].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Knight,
-                    color: false,
-                }),
-                pos: board.pos[0][1].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Bishop,
-                    color: false,
-                }),
-                pos: board.pos[0][2].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::King,
-                    color: false,
-                }),
-                pos: board.pos[0][3].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Queen,
-                    color: false,
-                }),
-                pos: board.pos[0][4].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Bishop,
-                    color: false,
-                }),
-                pos: board.pos[0][5].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Knight,
-                    color: false,
-                }),
-                pos: board.pos[0][6].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Rook,
-                    color: false,
-                }),
-                pos: board.pos[0][7].pos,
-            },
-        ];
-
-        board.pos[7] = [
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Rook,
-                    color: true,
-                }),
-                pos: board.pos[7][0].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Knight,
-                    color: true,
-                }),
-                pos: board.pos[7][1].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Bishop,
-                    color: true,
-                }),
-                pos: board.pos[7][2].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::King,
-                    color: true,
-                }),
-                pos: board.pos[7][3].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Queen,
-                    color: true,
-                }),
-                pos: board.pos[7][4].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Bishop,
-                    color: true,
-                }),
-                pos: board.pos[7][5].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Knight,
-                    color: true,
-                }),
-                pos: board.pos[7][6].pos,
-            },
-            Square {
-                piece: Some(Piece {
-                    _type: PieceType::Rook,
-                    color: true,
-                }),
-                pos: board.pos[7][7].pos,
-            },
+        let army = [
+            PieceType::Rook,
+            PieceType::Knight,
+            PieceType::Bishop,
+            PieceType::King,
+            PieceType::Queen,
+            PieceType::Bishop,
+            PieceType::Knight,
+            PieceType::Rook,
         ];
 
         for i in 0..8 {
             for j in 0..8 {
-                if i == 1 {
-                    board.pos[i][j].piece = Some(Piece {
-                        _type: PieceType::Pawn,
-                        color: false,
-                    })
-                } else if i == 6 {
-                    board.pos[i][j].piece = Some(Piece {
-                        _type: PieceType::Pawn,
-                        color: true,
-                    })
+                match i {
+                    0 | 7 => {
+                        board.pos[i][j].piece = Some(Piece {
+                            _type: army[j],
+                            color: if i == 7 { true } else { false },
+                        });
+                    }
+                    1 | 6 => {
+                        board.pos[i][j].piece = Some(Piece {
+                            _type: PieceType::Pawn,
+                            color: if i == 6 { true } else { false },
+                        });
+                    }
+                    _ => {}
                 }
             }
         }
@@ -226,14 +123,14 @@ impl Board {
     }
 
     fn get_moves(&self, i: usize, j: usize) -> Vec<Move> {
-        const MOVE_DOWN: (i8, i8) = (1, 0);
-        const MOVE_UP: (i8, i8) = (-1, 0);
-        const MOVE_RIGHT: (i8, i8) = (0, 1);
-        const MOVE_LEFT: (i8, i8) = (0, -1);
-        const MOVE_DOWN_RIGHT: (i8, i8) = (1, 1);
-        const MOVE_DOWN_LEFT: (i8, i8) = (1, -1);
-        const MOVE_UP_RIGHT: (i8, i8) = (-1, 1);
-        const MOVE_UP_LEFT: (i8, i8) = (-1, -1);
+        const DOWN: (i8, i8) = (1, 0);
+        const UP: (i8, i8) = (-1, 0);
+        const RIGHT: (i8, i8) = (0, 1);
+        const LEFT: (i8, i8) = (0, -1);
+        const DOWN_RIGHT: (i8, i8) = (1, 1);
+        const DOWN_LEFT: (i8, i8) = (1, -1);
+        const UP_RIGHT: (i8, i8) = (-1, 1);
+        const UP_LEFT: (i8, i8) = (-1, -1);
 
         let mut moves = Vec::new();
         match self.pos[i][j].piece {
@@ -262,9 +159,9 @@ impl Board {
                         }
                     }
 
-                    handle_pawn_push(self, i, j, &mut moves, (MOVE_UP, MOVE_DOWN), 1);
+                    handle_pawn_push(self, i, j, &mut moves, (UP, DOWN), 1);
                     if i == if self.turn { 6 } else { 1 } {
-                        handle_pawn_push(self, i, j, &mut moves, (MOVE_UP, MOVE_DOWN), 2);
+                        handle_pawn_push(self, i, j, &mut moves, (UP, DOWN), 2);
                     }
 
                     fn handle_pawn_take(
@@ -284,15 +181,15 @@ impl Board {
                             board.pos[i][j],
                             if direction {
                                 if board.turn {
-                                    MOVE_UP_RIGHT
+                                    UP_RIGHT
                                 } else {
-                                    MOVE_DOWN_LEFT
+                                    DOWN_LEFT
                                 }
                             } else {
                                 if board.turn {
-                                    MOVE_UP_LEFT
+                                    UP_LEFT
                                 } else {
-                                    MOVE_DOWN_RIGHT
+                                    DOWN_RIGHT
                                 }
                             },
                             1,
@@ -332,14 +229,14 @@ impl Board {
                 }
                 PieceType::Knight => {
                     for c in [
-                        (MOVE_UP, MOVE_UP_RIGHT),
-                        (MOVE_UP, MOVE_UP_LEFT),
-                        (MOVE_DOWN, MOVE_DOWN_RIGHT),
-                        (MOVE_DOWN, MOVE_DOWN_LEFT),
-                        (MOVE_RIGHT, MOVE_UP_LEFT),
-                        (MOVE_RIGHT, MOVE_DOWN_LEFT),
-                        (MOVE_LEFT, MOVE_UP_RIGHT),
-                        (MOVE_LEFT, MOVE_DOWN_RIGHT),
+                        (UP, UP_RIGHT),
+                        (UP, UP_LEFT),
+                        (DOWN, DOWN_RIGHT),
+                        (DOWN, DOWN_LEFT),
+                        (RIGHT, UP_LEFT),
+                        (RIGHT, DOWN_LEFT),
+                        (LEFT, UP_RIGHT),
+                        (LEFT, DOWN_RIGHT),
                     ] {
                         match self.create_move(
                             self.pos[i][j],
@@ -360,7 +257,25 @@ impl Board {
                     }
                 }
                 PieceType::Bishop => {
-                    todo!()
+                    for c in [DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT] {
+                        for k in 1..7 {
+                            match self.create_move(self.pos[i][j], c, k, None) {
+                                Some(m) => {
+                                    if let Some(p) = m.des.piece {
+                                        if p.color != self.turn {
+                                            moves.push(m);
+                                            break;
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(m);
+                                    }
+                                }
+                                None => {}
+                            }
+                        }
+                    }
                 }
                 PieceType::Rook => {
                     todo!()

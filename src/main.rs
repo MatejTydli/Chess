@@ -320,7 +320,7 @@ impl Board {
     ) -> Option<Move> {
         let x = sq.pos.0 as i8 + move_const.0 * mul;
         let y = sq.pos.1 as i8 + move_const.1 * mul;
-        if x >= 0 && x <= 8 && y >= 0 && y <= 8 {
+        if x >= 0 && x < 8 && y >= 0 && y < 8 {
             return Some(Move {
                 pos: sq,
                 des: self.pos[x as usize][y as usize],
@@ -345,6 +345,9 @@ fn main() {
     dm(&mut my_board, 1, 0, 1);
     dm(&mut my_board, 3, 1, 1);
     dm(&mut my_board, 0, 1, 0);
+    dm(&mut my_board, 6, 3, 1);
+    dm(&mut my_board, 1, 7, 0);
+    dm(&mut my_board, 7, 2, 4); //BISHOP
 }
 
 fn dm(board: &mut Board, i: usize, j: usize, num: usize) {
@@ -352,5 +355,5 @@ fn dm(board: &mut Board, i: usize, j: usize, num: usize) {
     board.do_move(debug[num]);
     board.print();
     println!();
-    std::thread::sleep(std::time::Duration::from_secs(1));
+    std::thread::sleep(std::time::Duration::from_millis(500));
 }

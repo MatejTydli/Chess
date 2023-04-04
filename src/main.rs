@@ -133,6 +133,7 @@ impl Board {
         const UP_LEFT: (i8, i8) = (-1, -1);
 
         let mut moves = Vec::new();
+
         match self.pos[i][j].piece {
             Some(piece) if piece.color == self.turn => match piece._type {
                 PieceType::Pawn => {
@@ -278,7 +279,25 @@ impl Board {
                     }
                 }
                 PieceType::Rook => {
-                    todo!()
+                    for c in [UP, DOWN, RIGHT, LEFT] {
+                        for k in 1..7 {
+                            match self.create_move(self.pos[i][j], c, k, None) {
+                                Some(m) => {
+                                    if let Some(p) = m.des.piece {
+                                        if p.color != self.turn {
+                                            moves.push(m);
+                                            break;
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(m);
+                                    }
+                                }
+                                None => {}
+                            }
+                        }
+                    }
                 }
                 PieceType::Queen => {
                     todo!()
@@ -339,7 +358,7 @@ fn main() {
     println!();
     std::thread::sleep(std::time::Duration::from_secs(1));
 
-    dm(&mut my_board, 6, 0, 1);
+    dm(&mut my_board, 6, 0, 1); // PAWN
     dm(&mut my_board, 1, 1, 1);
     dm(&mut my_board, 4, 0, 1);
     dm(&mut my_board, 1, 0, 1);
@@ -348,6 +367,7 @@ fn main() {
     dm(&mut my_board, 6, 3, 1);
     dm(&mut my_board, 1, 7, 0);
     dm(&mut my_board, 7, 2, 4); //BISHOP
+    dm(&mut my_board, 0, 0, 2);
 }
 
 fn dm(board: &mut Board, i: usize, j: usize, num: usize) {
@@ -355,5 +375,5 @@ fn dm(board: &mut Board, i: usize, j: usize, num: usize) {
     board.do_move(debug[num]);
     board.print();
     println!();
-    std::thread::sleep(std::time::Duration::from_millis(500));
+    std::thread::sleep(std::time::Duration::from_millis(100));
 }

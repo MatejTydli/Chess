@@ -1,4 +1,5 @@
-#![allow(dead_code)]
+// #![allow(dead_code)]
+use std::io::Read;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum PieceType {
@@ -12,7 +13,7 @@ enum PieceType {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct Piece {
-    _type: PieceType,
+    type_: PieceType,
     color: bool,
 }
 
@@ -29,8 +30,6 @@ struct Board {
     history: Vec<Board>,
 }
 
-// type special_req = dyn ;
-
 #[derive(Clone, Copy)]
 struct Move {
     pos: Square,
@@ -46,8 +45,8 @@ impl Board {
             PieceType::Rook,
             PieceType::Knight,
             PieceType::Bishop,
-            PieceType::King,
             PieceType::Queen,
+            PieceType::King,
             PieceType::Bishop,
             PieceType::Knight,
             PieceType::Rook,
@@ -58,13 +57,13 @@ impl Board {
                 match i {
                     0 | 7 => {
                         board.pos[i][j].piece = Some(Piece {
-                            _type: army[j],
+                            type_: army[j],
                             color: if i == 7 { true } else { false },
                         });
                     }
                     1 | 6 => {
                         board.pos[i][j].piece = Some(Piece {
-                            _type: PieceType::Pawn,
+                            type_: PieceType::Pawn,
                             color: if i == 6 { true } else { false },
                         });
                     }
@@ -103,9 +102,9 @@ impl Board {
             for sq in row {
                 match sq.piece {
                     Some(p) => {
-                        let mut p_let = format!("{:?}", p._type).as_bytes()[0] as char;
+                        let mut p_let = format!("{:?}", p.type_).as_bytes()[0] as char;
 
-                        if p._type == PieceType::Knight {
+                        if p.type_ == PieceType::Knight {
                             p_let = 'n';
                         }
 
@@ -122,7 +121,7 @@ impl Board {
         }
     }
 
-    fn get_moves(&self, i: usize, j: usize) -> Vec<Move> {
+    fn getmove_s(&self, i: usize, j: usize) -> Vec<Move> {
         const DOWN: (i8, i8) = (1, 0);
         const UP: (i8, i8) = (-1, 0);
         const RIGHT: (i8, i8) = (0, 1);
@@ -135,8 +134,36 @@ impl Board {
         let mut moves = Vec::new();
 
         match self.pos[i][j].piece {
-            Some(piece) if piece.color == self.turn => match piece._type {
+            Some(piece) if piece.color == self.turn => match piece.type_ {
                 PieceType::Pawn => {
+                    fn promote(board: &mut Board, pos: &Square, des: &Square) {
+                        println!("What do you want to promote the pawn into?: u");
+
+                        let mut buf = [0; 1024];
+                        std::io::stdin().read(&mut buf).unwrap();
+
+                        let buf_string_result = String::from_utf8(buf.to_vec()).unwrap();
+                        let buf_string = buf_string_result.trim().to_owned();
+
+                        board.pos[des.pos.0][des.pos.1].piece = Some(Piece {
+                            type_: match buf_string.to_ascii_lowercase().chars().next() {
+                                Some('q') => PieceType::Queen,
+                                Some('r') => PieceType::Rook,
+                                Some('b') => PieceType::Bishop,
+                                Some('n') => PieceType::Knight,
+                                _ => panic!("invalid promotion"),
+                            },
+                            color: pos.piece.unwrap().color,
+                        });
+                    }
+
+                    fn en_passant(board: &mut Board, pos: &Square, des: &Square) {
+                        board.pos[(des.pos.0 as i8
+                            + if pos.piece.unwrap().color { 1 } else { -1 })
+                            as usize][des.pos.1]
+                            .piece = None;
+                    }
+
                     fn handle_pawn_push(
                         board: &Board,
                         i: usize,
@@ -145,11 +172,15 @@ impl Board {
                         consts: ((i8, i8), (i8, i8)),
                         mul: i8,
                     ) {
-                        match board.create_move(
+                        match board.createmove_(
                             board.pos[i][j],
                             if board.turn { consts.0 } else { consts.1 },
                             mul,
-                            None,
+                            if i == if board.turn { 1 } else { 6 } {
+                                Some(promote)
+                            } else {
+                                None
+                            },
                         ) {
                             Some(m) => {
                                 if m.des.piece == None {
@@ -172,13 +203,7 @@ impl Board {
                         moves: &mut Vec<Move>,
                         direction: bool,
                     ) {
-                        let special_req = |board: &mut Board, pos: &Square, des: &Square| {
-                            board.pos[(des.pos.0 as i8
-                                + if pos.piece.unwrap().color { 1 } else { -1 })
-                                as usize][des.pos.1]
-                                .piece = None;
-                        };
-                        match board.create_move(
+                        match board.createmove_(
                             board.pos[i][j],
                             if direction {
                                 if board.turn {
@@ -194,7 +219,11 @@ impl Board {
                                 }
                             },
                             1,
-                            None,
+                            if i == if board.turn { 1 } else { 6 } {
+                                Some(promote)
+                            } else {
+                                None
+                            },
                         ) {
                             Some(mut m) => {
                                 if let Some(p) = m.des.piece {
@@ -205,7 +234,7 @@ impl Board {
                                     let offset: i8 = if direction { 1 } else { -1 };
                                     if let Some(p) = board.pos[i][(j as i8 + offset) as usize].piece
                                     {
-                                        if p._type == PieceType::Pawn && p.color != board.turn {
+                                        if p.type_ == PieceType::Pawn && p.color != board.turn {
                                             if let Some(p_h) =
                                                 board.history[board.history.len() - 2].pos
                                                     [if p.color { 6 } else { 1 }]
@@ -213,7 +242,7 @@ impl Board {
                                                     .piece
                                             {
                                                 if p_h.color == !board.turn {
-                                                    m.special_req = Some(special_req);
+                                                    m.special_req = Some(en_passant);
                                                     moves.push(m);
                                                 }
                                             }
@@ -239,7 +268,7 @@ impl Board {
                         (LEFT, UP_RIGHT),
                         (LEFT, DOWN_RIGHT),
                     ] {
-                        match self.create_move(
+                        match self.createmove_(
                             self.pos[i][j],
                             (c.0 .0 + c.1 .0, c.0 .1 + c.1 .1),
                             1,
@@ -260,7 +289,7 @@ impl Board {
                 PieceType::Bishop => {
                     for c in [DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT] {
                         for k in 1..7 {
-                            match self.create_move(self.pos[i][j], c, k, None) {
+                            match self.createmove_(self.pos[i][j], c, k, None) {
                                 Some(m) => {
                                     if let Some(p) = m.des.piece {
                                         if p.color != self.turn {
@@ -281,7 +310,7 @@ impl Board {
                 PieceType::Rook => {
                     for c in [UP, DOWN, RIGHT, LEFT] {
                         for k in 1..7 {
-                            match self.create_move(self.pos[i][j], c, k, None) {
+                            match self.createmove_(self.pos[i][j], c, k, None) {
                                 Some(m) => {
                                     if let Some(p) = m.des.piece {
                                         if p.color != self.turn {
@@ -300,27 +329,92 @@ impl Board {
                     }
                 }
                 PieceType::Queen => {
-                    todo!()
+                    for c in [
+                        UP, DOWN, RIGHT, LEFT, DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT,
+                    ] {
+                        for k in 1..7 {
+                            match self.createmove_(self.pos[i][j], c, k, None) {
+                                Some(m) => {
+                                    if let Some(p) = m.des.piece {
+                                        if p.color != self.turn {
+                                            moves.push(m);
+                                            break;
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(m);
+                                    }
+                                }
+                                None => {}
+                            }
+                        }
+                    }
                 }
                 PieceType::King => {
-                    todo!()
+                    for c in [
+                        UP, DOWN, RIGHT, LEFT, DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT,
+                    ] {
+                        match self.createmove_(self.pos[i][j], c, 1, None) {
+                            Some(m) => {
+                                if let Some(p) = m.des.piece {
+                                    if p.color != self.turn {
+                                        moves.push(m);
+                                    }
+                                } else {
+                                    moves.push(m);
+                                }
+                            }
+                            None => {}
+                        }
+                    }
                 }
             },
             _ => {}
         }
 
-        moves
+        if self.is_givinig_check(self.turn) {
+            let mut in_check_possible_moves = Vec::new();
+            for m in moves {
+                if false {
+                    in_check_possible_moves.push(m);
+                }
+            }
+
+            todo!()
+        } else {
+            moves
+        }
     }
 
-    fn do_move(&mut self, _move: Move) {
-        self.pos[_move.des.pos.0][_move.des.pos.1].piece =
-            self.pos[_move.pos.pos.0][_move.pos.pos.1].piece;
-        self.pos[_move.pos.pos.0][_move.pos.pos.1].piece = None;
+    fn is_givinig_check(&self, color: bool) -> bool {
+        let mut clone = self.clone();
+        clone.turn = color;
+
+        for i in 0..8 {
+            for j in 0..8 {
+                for m in clone.getmove_s(i, j) {
+                    if let Some(p) = m.des.piece {
+                        if p.type_ == PieceType::King && p.color != color {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        false
+    }
+
+    fn domove_(&mut self, move_: &Move) {
+        self.pos[move_.des.pos.0][move_.des.pos.1].piece =
+            self.pos[move_.pos.pos.0][move_.pos.pos.1].piece;
+        self.pos[move_.pos.pos.0][move_.pos.pos.1].piece = None;
         self.turn = !self.turn;
 
-        match _move.special_req {
+        match move_.special_req {
             Some(special_req) => {
-                special_req(self, &_move.pos, &_move.des);
+                special_req(self, &move_.pos, &move_.des);
             }
             None => {}
         }
@@ -330,7 +424,7 @@ impl Board {
         self.history.push(self_clone);
     }
 
-    fn create_move(
+    fn createmove_(
         &self,
         sq: Square,
         move_const: (i8, i8),
@@ -352,28 +446,29 @@ impl Board {
 }
 
 fn main() {
-    let mut my_board = Board::new();
+    let mut br = Board::new();
 
-    my_board.print();
+    br.print();
     println!();
-    std::thread::sleep(std::time::Duration::from_secs(1));
 
-    dm(&mut my_board, 6, 0, 1); // PAWN
-    dm(&mut my_board, 1, 1, 1);
-    dm(&mut my_board, 4, 0, 1);
-    dm(&mut my_board, 1, 0, 1);
-    dm(&mut my_board, 3, 1, 1);
-    dm(&mut my_board, 0, 1, 0);
-    dm(&mut my_board, 6, 3, 1);
-    dm(&mut my_board, 1, 7, 0);
-    dm(&mut my_board, 7, 2, 4); //BISHOP
-    dm(&mut my_board, 0, 0, 2);
+    // TEST GAME:
+    dm(&mut br, 6, 0, 1); //
+    dm(&mut br, 1, 1, 1); //
+    dm(&mut br, 4, 0, 1); //
+    dm(&mut br, 1, 0, 1); //
+    dm(&mut br, 3, 1, 1); //
+    dm(&mut br, 1, 7, 0); //
+    dm(&mut br, 2, 0, 0); //
+    dm(&mut br, 1, 6, 0); //
+    dm(&mut br, 1, 0, 0); //
 }
 
 fn dm(board: &mut Board, i: usize, j: usize, num: usize) {
-    let debug = board.get_moves(i, j);
-    board.do_move(debug[num]);
+    let debug = board.getmove_s(i, j);
+    board.domove_(&debug[num]);
     board.print();
+    println!("white {:?}", board.is_givinig_check(true));
+    println!("black {:?}", board.is_givinig_check(false));
     println!();
-    std::thread::sleep(std::time::Duration::from_millis(100));
+    std::thread::sleep(std::time::Duration::from_millis(300));
 }

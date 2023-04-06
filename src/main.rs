@@ -1,6 +1,3 @@
-// #![allow(dead_code)]
-use std::io::Read;
-
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum PieceType {
     Pawn,
@@ -34,7 +31,7 @@ struct Board {
 struct Move {
     pos: Square,
     des: Square,
-    special_req: Option<fn(&mut Board, &Square, &Square)>,
+    special_req: Option<fn(&mut Board, &Square, &Square, Option<PieceType>)>,
 }
 
 impl Board {
@@ -121,7 +118,7 @@ impl Board {
         }
     }
 
-    fn getmove_s(&self, i: usize, j: usize) -> Vec<Move> {
+    fn get_moves_raw(&self, i: usize, j: usize) -> Vec<Move> {
         const DOWN: (i8, i8) = (1, 0);
         const UP: (i8, i8) = (-1, 0);
         const RIGHT: (i8, i8) = (0, 1);
@@ -136,28 +133,29 @@ impl Board {
         match self.pos[i][j].piece {
             Some(piece) if piece.color == self.turn => match piece.type_ {
                 PieceType::Pawn => {
-                    fn promote(board: &mut Board, pos: &Square, des: &Square) {
-                        println!("What do you want to promote the pawn into?: u");
+                    fn promote(
+                        board: &mut Board,
+                        pos: &Square,
+                        des: &Square,
+                        promotion: Option<PieceType>,
+                    ) {
+                        let promo = promotion.unwrap();
 
-                        let mut buf = [0; 1024];
-                        std::io::stdin().read(&mut buf).unwrap();
-
-                        let buf_string_result = String::from_utf8(buf.to_vec()).unwrap();
-                        let buf_string = buf_string_result.trim().to_owned();
+                        assert_ne!(promo, PieceType::Pawn);
+                        assert_ne!(promo, PieceType::King);
 
                         board.pos[des.pos.0][des.pos.1].piece = Some(Piece {
-                            type_: match buf_string.to_ascii_lowercase().chars().next() {
-                                Some('q') => PieceType::Queen,
-                                Some('r') => PieceType::Rook,
-                                Some('b') => PieceType::Bishop,
-                                Some('n') => PieceType::Knight,
-                                _ => panic!("invalid promotion"),
-                            },
+                            type_: promo,
                             color: pos.piece.unwrap().color,
                         });
                     }
 
-                    fn en_passant(board: &mut Board, pos: &Square, des: &Square) {
+                    fn en_passant(
+                        board: &mut Board,
+                        pos: &Square,
+                        des: &Square,
+                        _: Option<PieceType>,
+                    ) {
                         board.pos[(des.pos.0 as i8
                             + if pos.piece.unwrap().color { 1 } else { -1 })
                             as usize][des.pos.1]
@@ -172,7 +170,7 @@ impl Board {
                         consts: ((i8, i8), (i8, i8)),
                         mul: i8,
                     ) {
-                        match board.createmove_(
+                        match board.create_move(
                             board.pos[i][j],
                             if board.turn { consts.0 } else { consts.1 },
                             mul,
@@ -203,7 +201,7 @@ impl Board {
                         moves: &mut Vec<Move>,
                         direction: bool,
                     ) {
-                        match board.createmove_(
+                        match board.create_move(
                             board.pos[i][j],
                             if direction {
                                 if board.turn {
@@ -268,7 +266,7 @@ impl Board {
                         (LEFT, UP_RIGHT),
                         (LEFT, DOWN_RIGHT),
                     ] {
-                        match self.createmove_(
+                        match self.create_move(
                             self.pos[i][j],
                             (c.0 .0 + c.1 .0, c.0 .1 + c.1 .1),
                             1,
@@ -289,7 +287,7 @@ impl Board {
                 PieceType::Bishop => {
                     for c in [DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT] {
                         for k in 1..7 {
-                            match self.createmove_(self.pos[i][j], c, k, None) {
+                            match self.create_move(self.pos[i][j], c, k, None) {
                                 Some(m) => {
                                     if let Some(p) = m.des.piece {
                                         if p.color != self.turn {
@@ -310,7 +308,7 @@ impl Board {
                 PieceType::Rook => {
                     for c in [UP, DOWN, RIGHT, LEFT] {
                         for k in 1..7 {
-                            match self.createmove_(self.pos[i][j], c, k, None) {
+                            match self.create_move(self.pos[i][j], c, k, None) {
                                 Some(m) => {
                                     if let Some(p) = m.des.piece {
                                         if p.color != self.turn {
@@ -333,7 +331,7 @@ impl Board {
                         UP, DOWN, RIGHT, LEFT, DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT,
                     ] {
                         for k in 1..7 {
-                            match self.createmove_(self.pos[i][j], c, k, None) {
+                            match self.create_move(self.pos[i][j], c, k, None) {
                                 Some(m) => {
                                     if let Some(p) = m.des.piece {
                                         if p.color != self.turn {
@@ -355,7 +353,7 @@ impl Board {
                     for c in [
                         UP, DOWN, RIGHT, LEFT, DOWN_RIGHT, DOWN_LEFT, UP_RIGHT, UP_LEFT,
                     ] {
-                        match self.createmove_(self.pos[i][j], c, 1, None) {
+                        match self.create_move(self.pos[i][j], c, 1, None) {
                             Some(m) => {
                                 if let Some(p) = m.des.piece {
                                     if p.color != self.turn {
@@ -373,17 +371,27 @@ impl Board {
             _ => {}
         }
 
+        moves
+    }
+
+    fn get_moves(&self, i: usize, j: usize) -> Vec<Move> {
+        let moves_raw = self.get_moves_raw(i, j);
+
         if self.is_givinig_check(self.turn) {
-            let mut in_check_possible_moves = Vec::new();
-            for m in moves {
-                if false {
-                    in_check_possible_moves.push(m);
+            let mut moves = Vec::new();
+            for m in moves_raw {
+                let mut clone = self.clone();
+                clone.turn = !clone.turn;
+                clone.do_move(&m);
+
+                if !clone.is_givinig_check(self.turn) {
+                    moves.push(m);
                 }
             }
 
-            todo!()
-        } else {
             moves
+        } else {
+            moves_raw
         }
     }
 
@@ -393,7 +401,7 @@ impl Board {
 
         for i in 0..8 {
             for j in 0..8 {
-                for m in clone.getmove_s(i, j) {
+                for m in clone.get_moves_raw(i, j) {
                     if let Some(p) = m.des.piece {
                         if p.type_ == PieceType::King && p.color != color {
                             return true;
@@ -406,7 +414,7 @@ impl Board {
         false
     }
 
-    fn domove_(&mut self, move_: &Move) {
+    fn do_move(&mut self, move_: &Move) {
         self.pos[move_.des.pos.0][move_.des.pos.1].piece =
             self.pos[move_.pos.pos.0][move_.pos.pos.1].piece;
         self.pos[move_.pos.pos.0][move_.pos.pos.1].piece = None;
@@ -414,7 +422,7 @@ impl Board {
 
         match move_.special_req {
             Some(special_req) => {
-                special_req(self, &move_.pos, &move_.des);
+                special_req(self, &move_.pos, &move_.des, None);
             }
             None => {}
         }
@@ -424,12 +432,12 @@ impl Board {
         self.history.push(self_clone);
     }
 
-    fn createmove_(
+    fn create_move(
         &self,
         sq: Square,
         move_const: (i8, i8),
         mul: i8,
-        special_req: Option<fn(&mut Board, &Square, &Square)>,
+        special_req: Option<fn(&mut Board, &Square, &Square, Option<PieceType>)>,
     ) -> Option<Move> {
         let x = sq.pos.0 as i8 + move_const.0 * mul;
         let y = sq.pos.1 as i8 + move_const.1 * mul;
@@ -452,20 +460,21 @@ fn main() {
     println!();
 
     // TEST GAME:
-    dm(&mut br, 6, 0, 1); //
-    dm(&mut br, 1, 1, 1); //
-    dm(&mut br, 4, 0, 1); //
-    dm(&mut br, 1, 0, 1); //
-    dm(&mut br, 3, 1, 1); //
-    dm(&mut br, 1, 7, 0); //
-    dm(&mut br, 2, 0, 0); //
-    dm(&mut br, 1, 6, 0); //
-    dm(&mut br, 1, 0, 0); //
+    dm(&mut br, 6, 0, 1); // PAWN
+    dm(&mut br, 1, 1, 1);
+    dm(&mut br, 4, 0, 1);
+    dm(&mut br, 1, 0, 1);
+    dm(&mut br, 3, 1, 1);
+    dm(&mut br, 0, 1, 0);
+    dm(&mut br, 6, 3, 1);
+    dm(&mut br, 1, 7, 0);
+    dm(&mut br, 7, 2, 4); //BISHOP
+    dm(&mut br, 0, 0, 2);
 }
 
 fn dm(board: &mut Board, i: usize, j: usize, num: usize) {
-    let debug = board.getmove_s(i, j);
-    board.domove_(&debug[num]);
+    let debug = board.get_moves(i, j);
+    board.do_move(&debug[num]);
     board.print();
     println!("white {:?}", board.is_givinig_check(true));
     println!("black {:?}", board.is_givinig_check(false));

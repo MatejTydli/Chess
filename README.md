@@ -2,10 +2,11 @@
 
 **This is rust library for generating chess moves and managing chess game with board and players.**
 
-**This lib is not working and is not finished!**
+**This lib isn't working and isn't finished!**
 
 ## This is not
 - Complet chess game
+- Chess server
 - GUI
 - *Super* fast (speed is not main focus)
 - AI
@@ -18,8 +19,19 @@
 - In early stage of development
 
 ## Limitation
+- You can't create or modify your own pieces
+- You can't do invalid moves
+- You can't make board bigger
+- ...  
+
+## Examples
+
+
+### FEN Strings
+
+```rust
+```  
 
 ## Credit
 me lol
-
 Inspiration from this rust chess library: https://github.com/jordanbray/chess

@@ -1,5 +1,38 @@
-#![allow(dead_code)]
+//! This is rust chess library focused on simplicity.
+//! Speed is not main focus. This library is not good for chess engine or AI.
+//! This library is good for making simple chess game.
+//! 
+//! # Examples
+//! 
+//! ```rust
+//! todo()!;
+//! ```
+//! Read `README.md` for more info.
 
+mod game;
+pub use crate::game::*;
+
+mod board;
+pub use crate::board::*;
+
+mod timer;
+pub use crate::timer::*;
+
+mod piece;
+pub use crate::piece::*;
+
+mod move_gen;
+pub use crate::move_gen::*;
+
+mod chess_move;
+pub use crate::chess_move::*;
+
+mod square;
+pub use crate::square::*;
+
+
+//old code:
+/*
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum PieceType {
     Pawn,
@@ -14,12 +47,6 @@ enum PieceType {
 struct Piece {
     type_: PieceType,
     color: bool,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct Square {
-    piece: Option<Piece>,
-    pos: (usize, usize),
 }
 
 #[derive(Clone, Debug)]
@@ -463,3 +490,4 @@ mod test {
 
     }
 }
+*/

@@ -1,29 +1,8 @@
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum File {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum Rank {
-    First,
-    Second,
-    Third,
-    Fourth,
-    Fifth,
-    Sixth,
-    Seventh,
-    Eighth,
-}
+use crate::file;
+use crate::rank;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Square {
-    pos: (File, Rank),
+    pos: (file::File, rank::Rank),
     // piece: Option<Piece>
-} 
+}

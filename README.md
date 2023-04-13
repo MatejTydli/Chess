@@ -26,6 +26,14 @@
 
 ## Examples
 
+```rust
+```
+
+```rust
+```
+
+```rust
+```
 
 ### FEN Strings
 
@@ -33,5 +41,5 @@
 ```  
 
 ## Credit
-me lol
-Inspiration from this rust chess library: https://github.com/jordanbray/chess
+**ME *lol*!**
+Big inspiration from this rust chess library: https://github.com/jordanbray/chess

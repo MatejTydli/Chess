@@ -18,6 +18,12 @@ pub use crate::board::*;
 mod timer;
 pub use crate::timer::*;
 
+mod file;
+pub use crate::file::*;
+
+mod rank;
+pub use crate::rank::*;
+
 mod piece;
 pub use crate::piece::*;
 
@@ -29,7 +35,6 @@ pub use crate::chess_move::*;
 
 mod square;
 pub use crate::square::*;
-
 
 //old code:
 /*

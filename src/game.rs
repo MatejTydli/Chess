@@ -1,13 +1,17 @@
-use crate::board;
+use crate::Board;
 use crate::timer;
 
+/// represent a player or color of their pieces
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Color {
     White,
     Black
 }
 
+/// Game struct is for managing board and timer at once
+/// 
 pub struct Game {
-    board: board::Board,
+    board: Board,
+    turn: Color
     // timer: Timer,
 }

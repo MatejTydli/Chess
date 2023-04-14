@@ -1,11 +1,21 @@
 //! This is rust chess library focused on simplicity.
 //! Speed is not main focus. This library is not good for chess engine or AI.
 //! This library is good for making simple chess game.
-//! 
+//!
 //! # Examples
-//! 
+//!
 //! ```rust
-//! todo()!;
+//! // Board::deafult();
+//! // Timer::new(
+//! //     white: Duration::from_secs(600),
+//! //     black: Duration::from_secs(600),
+//! //     white_move: Duration::from_secs(0),
+//! //     white_move: Duration::from_secs(0),
+//! //     white_exten: Duration::from_secs(0),
+//! //     white_exten: Duration::from_secs(0),
+//! // );
+//! // 
+//! // Game::new(&mut Board, &mut Timer);
 //! ```
 //! Read `README.md` for more info.
 
@@ -35,6 +45,16 @@ pub use crate::chess_move::*;
 
 mod square;
 pub use crate::square::*;
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        assert_eq!(square::A1, Square::new(Rank::First, File::A));
+    }
+}
 
 //old code:
 /*

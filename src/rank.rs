@@ -1,3 +1,4 @@
+/// rank enum for simple orientation on the board
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Rank {
     First,
@@ -11,6 +12,8 @@ pub enum Rank {
 }
 
 impl Rank {
+    /// function for converting usize to Rank
+    /// if conversion fails error msg is returned in form of String
     pub fn try_from_usize(num: usize) -> Result<Self, String> {
         match num {
             0 => Ok(Self::First),
@@ -27,6 +30,7 @@ impl Rank {
         }
     }
 
+    /// converts Rank to usize
     pub fn to_usize(&self) -> usize {
         match self {
             Self::First => 0,

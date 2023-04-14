@@ -1,4 +1,4 @@
-// File enum for simple positions orientation 
+/// File enum for simple orientation on the board 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum File {
     A,
@@ -12,6 +12,8 @@ pub enum File {
 }
 
 impl File {
+    /// function for converting usize to File
+    /// if conversion fails error msg is returned in form of String 
     pub fn try_from_usize(num: usize) -> Result<Self, String> {
         match num {
             0 => Ok(Self::A),
@@ -28,6 +30,7 @@ impl File {
         }
     }
 
+    /// converts File to usize
     pub fn to_usize(&self) -> usize {
         match self {
             Self::A => 0,

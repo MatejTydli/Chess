@@ -1,5 +1,5 @@
 use crate::Board;
-use crate::timer;
+//use crate::Timer;
 
 /// represent a player or color of their pieces
 #[derive(Clone, Copy, Debug, PartialEq)]

@@ -52,7 +52,13 @@ mod test {
 
     #[test]
     fn it_works() {
-        assert_eq!(square::A1, Square::new(Rank::First, File::A));
+        assert_eq!(Square::A1, Square::new(Rank::First, File::A));
+        
+        let mut board = Board::deafult();
+
+
+        assert_eq!(board.get(Square::A4), &None);
+        assert_eq!(board.get(Square::A1).unwrap().color, Color::White);
     }
 }
 

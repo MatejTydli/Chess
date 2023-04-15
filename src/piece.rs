@@ -15,6 +15,6 @@ pub enum PieceType {
 /// doesn't hold any information about their position on board 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Piece {
-    piece_type: PieceType,
-    color: Color,
+    pub piece_type: PieceType,
+    pub color: Color,
 }

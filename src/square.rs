@@ -3,7 +3,7 @@ use crate::Rank;
 
 /// represent a index on the board
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Square(pub usize);
+pub struct Square(pub(crate) usize);
 
 impl Square {
     /// possible way to create square

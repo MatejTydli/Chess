@@ -11,8 +11,8 @@ pub enum PieceType {
     King,
 }
 
-/// represent a piece with type and color
-/// doesn't hold any information about their position on board 
+/// Represent a piece with type and color.
+/// Doesn't hold any information about their position on the [crate::Board]. 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Piece {
     pub piece_type: PieceType,

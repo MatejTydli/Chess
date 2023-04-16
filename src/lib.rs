@@ -19,14 +19,14 @@
 //! ```
 //! Read `README.md` for more info.
 
-mod game;
-pub use crate::game::*;
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Color {
+    White,
+    Black
+}
 
 mod board;
 pub use crate::board::*;
-
-mod timer;
-pub use crate::timer::*;
 
 mod file;
 pub use crate::file::*;
@@ -55,7 +55,6 @@ mod test {
         assert_eq!(Square::A1, Square::new(Rank::First, File::A));
         
         let mut board = Board::deafult();
-
 
         assert_eq!(board.get(Square::A4), &None);
         assert_eq!(board.get(Square::A1).unwrap().color, Color::White);

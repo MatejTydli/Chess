@@ -11,7 +11,7 @@ use crate::Square;
 pub struct Board {
     pos: [[Option<Piece>; 8]; 8],
     history: Vec<[[Option<Piece>; 8]; 8]>,
-    turn: Color
+    turn: Color,
 }
 
 impl Board {
@@ -58,12 +58,24 @@ impl Board {
         Board {
             pos,
             history: Vec::new(),
-            turn
+            turn,
         }
     }
 
+    /// Place(or replace) piece on board
+    pub fn place_piece(&mut self, index: Square, piece: Option<Piece>) -> &mut Board {
+        *self.get_mut(index) = piece;
+        self
+    }
+
+    /// Remove piece on board
+    pub fn remove_piece(&mut self, index: Square) -> &mut Board {
+        *self.get_mut(index) = None;
+        self
+    }
+
     /// get reference to specific [Option<Piece>] on the [Board]
-    pub fn get(&self, index: Square) -> &Option<Piece> {
+    pub(crate) fn get(&self, index: Square) -> &Option<Piece> {
         &self.pos[index.0 / 8][index.0 % 8]
     }
 
@@ -82,12 +94,21 @@ impl Board {
         &mut self.pos[rank.to_usize()]
     }
 
-    pub fn place_piece(&mut self, index: Square, piece: Option<Piece>) {
-        *self.get_mut(index) = piece;
+    /// Iterate over whole [Board] with reference.
+    pub(crate) fn iter(&self) -> std::vec::IntoIter<&Option<Piece>> {
+        let mut all = Vec::new();
+
+        for rank in &self.pos {
+            for piece in rank {
+                all.push(piece);
+            }
+        }
+
+        all.into_iter()
     }
 
-    /// iterate over whole [Board] with &mut
-    pub(crate) fn iter_mut_ref(&mut self) -> std::vec::IntoIter<&mut Option<Piece>> {
+    /// Iterate over whole [Board] with mutable reference.
+    pub(crate) fn iter_mut(&mut self) -> std::vec::IntoIter<&mut Option<Piece>> {
         let mut all = Vec::new();
 
         for rank in &mut self.pos {

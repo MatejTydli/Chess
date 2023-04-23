@@ -1,4 +1,6 @@
+use crate::ChessMove;
 use crate::File;
+use crate::PieceType;
 use crate::Rank;
 
 /// represent a index on the board
@@ -10,6 +12,54 @@ impl Square {
     /// consider using constant
     pub fn new(rank: Rank, file: File) -> Square {
         Square(rank.to_usize() * 8 + file.to_usize())
+    }
+
+    /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares up.
+    #[inline]
+    pub fn up(&self, mul: i32) -> ChessMove {
+        ChessMove::new(*self, Square((self.0 as i32 - 8 * mul) as usize), None)
+    }
+
+    /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares down.
+    #[inline]
+    pub fn down(&self, mul: i32, promo: Option<PieceType>) -> ChessMove {
+        ChessMove::new(*self, Square((self.0 as i32 + 8 * mul) as usize), promo)
+    }
+
+    /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares to the right.
+    #[inline]
+    pub fn right(&self, mul: i32) -> ChessMove {
+        ChessMove::new(*self, Square((self.0 as i32 + mul) as usize), None)
+    }
+
+    /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares to the left.
+    #[inline]
+    pub fn left(&self, mul: i32) -> ChessMove {
+        ChessMove::new(*self, Square((self.0 as i32 - mul) as usize), None)
+    }
+
+    /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares down and to the right.
+    #[inline]
+    pub fn down_right(&self, mul: i32, promo: Option<PieceType>) -> ChessMove {
+        ChessMove::new(*self, Square((self.0 as i32 + 9 * mul) as usize), promo)
+    }
+
+    /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares down and to the left.
+    #[inline]
+    pub fn down_left(&self, mul: i32, promo: Option<PieceType>) -> ChessMove {
+        ChessMove::new(*self, Square((self.0 as i32 + 7 * mul) as usize), promo)
+    }
+
+    /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares up and to the right.
+    #[inline]
+    pub fn up_right(&self, mul: i32, promo: Option<PieceType>) -> ChessMove {
+        ChessMove::new(*self, Square((self.0 as i32 - 7 * mul) as usize), promo)
+    }
+
+    /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares up and to the left.
+    #[inline]
+    pub fn up_left(&self, mul: i32, promo: Option<PieceType>) -> ChessMove {
+        ChessMove::new(*self, Square((self.0 as i32 - 9 * mul) as usize), promo)
     }
 
     /// built in constant A1 [Square] for easy indexing to [crate::Board]
@@ -138,6 +188,6 @@ impl Square {
     pub const F8: Square = Square(61);
     /// built in constant G8 [Square] for easy indexing to [crate::Board]
     pub const G8: Square = Square(62);
-    /// built in constant H8[Square] for easy indexing to [crate::Board]
+    /// built in constant H8 [Square] for easy indexing to [crate::Board]
     pub const H8: Square = Square(63);
 }

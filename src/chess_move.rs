@@ -1,10 +1,10 @@
 use crate::Board;
 use crate::PieceType;
 use crate::Square;
-// use crate::MoveGen;
+use crate::GenMask;
+use crate::gen_moves;
 
-/// Represent a chess move. [crate::Piece] from one [Square] can move to destination [Square].
-/// This stores stores info about move.   
+/// Represent a chess move, stores info about move (start, destination, promotion).   
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChessMove {
     start: Square,
@@ -22,13 +22,24 @@ impl ChessMove {
         }
     }
 
-    // pub fn is_valid(&self, board: &Board) -> bool {
-    //     for valid_move in MoveGen::new(&board).gen_valid() {
-    //         if valid_move == self {
-    //             return true;
-    //         }
-    //     }
+    pub fn is_valid(&self, board: &Board) -> bool {
+        for valid_move in gen_moves(board, &GenMask::Both) {
+            if &valid_move == self {
+                return true;
+            }
+        }
 
-    //     false
-    // }
+        false
+    }
+
+    /*
+    , promo: Option<PieceType>, spec_req: fn(&mut Board)
+    , promo: Option<PieceType>, spec_req: fn(&mut Board)
+    , promo: Option<PieceType>, spec_req: fn(&mut Board)
+    , promo: Option<PieceType>, spec_req: fn(&mut Board)
+    , promo: Option<PieceType>, spec_req: fn(&mut Board)
+    , promo: Option<PieceType>, spec_req: fn(&mut Board)
+    , promo: Option<PieceType>, spec_req: fn(&mut Board)
+    , promo: Option<PieceType>, spec_req: fn(&mut Board)
+     */
 }

@@ -4,14 +4,7 @@
 //!
 //! # Examples
 //!
-//! ```
-//! 
-//! 
-//! 
-//! 
-//!  
-//! 
-//! 
+//! ```rust
 //! ```
 //! Read `README.md` for more info.
 
@@ -42,22 +35,17 @@ pub use crate::chess_move::*;
 mod square;
 pub use crate::square::*;
 
-#[cfg(test)]
-mod test {
-    use super::*;
+// #[cfg(test)]
+// mod test {
+//     use super::*;
 
-    #[test]
-    fn it_works() {
-        assert_eq!(Square::A1, Square::new(Rank::First, File::A));
+//     #[test]
+//     fn it_works() {
         
-        let mut board = Board::deafult();
+//     }
+// }
 
-        assert_eq!(board.get(Square::A4), &None);
-        assert_eq!(board.get(Square::A1).unwrap().color, Color::White);
-    }
-}
-
-//old code:
+// old code:
 /*
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum PieceType {

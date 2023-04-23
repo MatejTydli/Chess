@@ -75,7 +75,7 @@ impl Board {
     }
 
     /// get reference to specific [Option<Piece>] on the [Board]
-    pub(crate) fn get(&self, index: Square) -> &Option<Piece> {
+    pub fn get(&self, index: Square) -> &Option<Piece> {
         &self.pos[index.0 / 8][index.0 % 8]
     }
 
@@ -85,7 +85,7 @@ impl Board {
     }
 
     /// get reference to specific rank on the [Board]
-    pub(crate) fn get_rank(&self, rank: Rank) -> &[Option<Piece>; 8] {
+    pub fn get_rank(&self, rank: Rank) -> &[Option<Piece>; 8] {
         &self.pos[rank.to_usize()]
     }
 
@@ -95,7 +95,7 @@ impl Board {
     }
 
     /// Iterate over whole [Board] with reference.
-    pub(crate) fn iter(&self) -> std::vec::IntoIter<&Option<Piece>> {
+    pub fn iter(&self) -> std::vec::IntoIter<&Option<Piece>> {
         let mut all = Vec::new();
 
         for rank in &self.pos {

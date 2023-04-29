@@ -13,25 +13,26 @@ pub enum GenMask {
 }
 
 impl GenMask {
+    /// Checks if [Color] is not filtered out.
     pub fn is_eq(&self, other: Color) -> bool {
         if *self == GenMask::Both
             || (*self == GenMask::White && other == Color::White)
             || (*self == GenMask::Black && other == Color::Black)
         {
-            true
-        } else {
-            false
+            return true;
         }
+
+        false
     }
 }
 
-/// Create valid moves from [Board], depends on [GenMask]
+/// Create valid moves from [Board], depends on [GenMask].
 pub fn gen_moves(board: &Board, color: &GenMask) -> Vec<ChessMove> {
     todo!()
 }
 
-/// Create valid moves from [Board], but not take checks in to account. Depends on [GenMask]
-pub(crate) fn gen_moves_raw(board: &mut Board, color: &GenMask) -> Vec<ChessMove> {
+/// Create valid moves from [Board], but not take checks in to account. Depends on [GenMask].
+fn gen_moves_raw(board: &mut Board, color: &GenMask) -> Vec<ChessMove> {
     let mut moves = Vec::new();
 
     for place in board.iter() {
@@ -39,7 +40,7 @@ pub(crate) fn gen_moves_raw(board: &mut Board, color: &GenMask) -> Vec<ChessMove
             match piece.piece_type {
                 crate::PieceType::Pawn => {
                     
-                },
+                }
                 crate::PieceType::Knight => todo!(),
                 crate::PieceType::Bishop => todo!(),
                 crate::PieceType::Rook => todo!(),

@@ -17,14 +17,6 @@ impl Square {
         Square(rank.to_usize() * 8 + file.to_usize())
     }
 
-    fn is_valid(&self) -> bool {
-        if self.0 < 63 {
-            return true;
-        }
-
-        false
-    }
-
     /// Returning [Result].
     /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares up.
     /// Return [Err] if [Square] is out of bounds of board.
@@ -34,11 +26,12 @@ impl Square {
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
         let sq = Square(sq_i);
-        if sq.is_valid() {
-            return Ok(ChessMove::new(*self, sq, promo));
+        // outside: up/down || (right) || (left)  
+        if sq.0 < 63 || (self.0 % 7 == 0 && sq.0 % 7 != 0) || (self.0 % 7 == 1 && sq.0 % 7 != 1) {
+            return Err("The resulting square is out of bounds");
         }
 
-        Err("The resulting square is out of bounds")
+        Ok(ChessMove::new(*self, sq, promo))
     }
 
     /// Create [ChessMove] from [self] [Square] to n squares up.

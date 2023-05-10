@@ -34,12 +34,5 @@ impl ChessMove {
 
     /*
     , promo: Option<PieceType>, spec_req: fn(&mut Board)
-    , promo: Option<PieceType>, spec_req: fn(&mut Board)
-    , promo: Option<PieceType>, spec_req: fn(&mut Board)
-    , promo: Option<PieceType>, spec_req: fn(&mut Board)
-    , promo: Option<PieceType>, spec_req: fn(&mut Board)
-    , promo: Option<PieceType>, spec_req: fn(&mut Board)
-    , promo: Option<PieceType>, spec_req: fn(&mut Board)
-    , promo: Option<PieceType>, spec_req: fn(&mut Board)
      */
 }

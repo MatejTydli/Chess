@@ -17,6 +17,18 @@ impl Square {
         Square(rank.to_usize() * 8 + file.to_usize())
     }
 
+    /// Extract [Rank] from [Square], return [Result].
+    /// Return [Err] when [Square] is not valid (it's outside the [Board]).
+    fn get_rank(&self) -> Result<Rank, &str> {
+        Rank::try_from_usize((self.0 + 1 / 8) - 1)
+    }
+
+    /// Extract [File] from [Square], return [Result].
+    /// Return [Err] when [Square] is not valid (it's outside the [Board]).
+    fn get_file(&self) -> Result<File, &str> {
+        File::try_from_usize((self.0 + 1 % 8) - 1)
+    }
+
     /// Returning [Result].
     /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares up.
     /// Return [Err] if [Square] is out of bounds of board.
@@ -26,8 +38,9 @@ impl Square {
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
         let sq = Square(sq_i);
-        // outside: up/down || (right) || (left)  
-        if sq.0 < 63 || (self.0 % 7 == 0 && sq.0 % 7 != 0) || (self.0 % 7 == 1 && sq.0 % 7 != 1) {
+        // outside: up/down
+        // outside: left/right is handled by functions which creating that moves
+        if sq.0 > 63 {
             return Err("The resulting square is out of bounds");
         }
 

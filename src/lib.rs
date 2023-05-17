@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 //! This is rust chess library focused on simplicity.
 //! Speed is not main focus. This library **isn't** good for chess engine or AI.
 //! This library is good for making simple chess game.
@@ -34,16 +36,6 @@ pub use crate::chess_move::*;
 
 mod square;
 pub use crate::square::*;
-
-// #[cfg(test)]
-// mod test {
-//     use super::*;
-
-//     #[test]
-//     fn it_works() {
-        
-//     }
-// }
 
 // old code:
 /*

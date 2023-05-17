@@ -8,7 +8,7 @@ use crate::gen_moves;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChessMove {
     start: Square,
-    dest: Square,
+    pub(crate) dest: Square,
     promo: Option<PieceType>,
 }
 
@@ -28,7 +28,6 @@ impl ChessMove {
                 return true;
             }
         }
-
         false
     }
 

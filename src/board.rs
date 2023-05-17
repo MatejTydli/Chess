@@ -136,31 +136,3 @@ impl Board {
         todo!()
     }
 }
-
-// old indexing replace by Board::get() and Board::get_mut()
-// /// implement Index operator directly for [Board] using [Rank] and [File]
-// impl std::ops::Index<(Rank, File)> for Board {
-//     type Output = Option<Piece>;
-//     fn index(&self, index: (Rank, File)) -> &Self::Output {
-//         &self.pos[index.0.to_usize()][index.1.to_usize()]
-//     }
-// }
-// /// implement IndexMut operator directly for [Board] using [Rank] and [File]
-// impl std::ops::IndexMut<(Rank, File)> for Board {
-//     fn index_mut(&mut self, index: (Rank, File)) -> &mut Self::Output {
-//         &mut self.pos[index.0.to_usize()][index.1.to_usize()]
-//     }
-// }
-// /// implement Index operator directly for [Board] using [Square]
-// impl std::ops::Index<Square> for Board {
-//     type Output = Option<Piece>;
-//     fn index(&self, index: Square) -> &Self::Output {
-//         &self.pos[index.0 / 8 + 1][index.0 % 8]
-//     }
-// }
-// /// implement IndexMut operator directly for [Board] using [Square]
-// impl std::ops::IndexMut<Square> for Board {
-//     fn index_mut(&mut self, index: Square) -> &mut Self::Output {
-//         &mut self.pos[index.0 / 8 + 1][index.0 % 8]
-//     }
-// }

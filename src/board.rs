@@ -74,7 +74,7 @@ impl Board {
         self
     }
 
-    /// get reference to specific [Option<Piece>] on the [Board]
+    /// get reference to specific [`Option<Piece>`] on the [Board]
     pub fn get(&self, index: Square) -> &Option<Piece> {
         &self.pos[index.0 / 8][index.0 % 8]
     }

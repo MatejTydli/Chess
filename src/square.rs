@@ -70,19 +70,19 @@ impl Square {
         self.create_move(sq.0, promo)
     }
 
-    /// Create [ChessMove] from [self] [Square] to n squares up.
+    /// Create [ChessMove] from [Square] to n squares up.
     #[inline]
     pub fn up(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_move((self.0 as i32 - 8 * mul) as usize, promo)
     }
 
-    /// Create [ChessMove] from [self] [Square] to n squares down.
+    /// Create [ChessMove] from [Square] to n squares down.
     #[inline]
     pub fn down(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_move((self.0 as i32 + 8 * mul) as usize, promo)
     }
 
-    /// Create [ChessMove] from [self] [Square] to n squares right.
+    /// Create [ChessMove] from [Square] to n squares right.
     #[inline]
     pub fn right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         let sq = Square((self.0 as i32 + mul) as usize);
@@ -92,7 +92,7 @@ impl Square {
         self.create_move(sq.0, promo)
     }
 
-    /// Create [ChessMove] from [self] [Square] to n squares left.
+    /// Create [ChessMove] from [Square] to n squares left.
     #[inline]
     pub fn left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         let sq = Square((self.0 as i32 - mul) as usize);
@@ -102,7 +102,7 @@ impl Square {
         self.create_move(sq.0, promo)
     }
 
-    /// Create [ChessMove] from [self] [Square] to n squares right and down.
+    /// Create [ChessMove] from [Square] to n squares right and down.
     #[inline]
     pub fn down_right(
         &self,
@@ -112,19 +112,19 @@ impl Square {
         self.create_diagonal_move((self.0 as i32 + 9 * mul) as usize, mul, promo)
     }
 
-    /// Create [ChessMove] from [self] [Square] to n squares left and down.
+    /// Create [ChessMove] from [Square] to n squares left and down.
     #[inline]
     pub fn down_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_diagonal_move((self.0 as i32 + 7 * mul) as usize, mul, promo)
     }
 
-    /// Create [ChessMove] from [self] [Square] to n squares right and up.
+    /// Create [ChessMove] from [Square] to n squares right and up.
     #[inline]
     pub fn up_right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_diagonal_move((self.0 as i32 - 7 * mul) as usize, mul, promo)
     }
 
-    /// Create [ChessMove] from [self] [Square] to n squares left and up.
+    /// Create [ChessMove] from [Square] to n squares left and up.
     #[inline]
     pub fn up_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_diagonal_move((self.0 as i32 - 9 * mul) as usize, mul, promo)

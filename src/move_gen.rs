@@ -43,9 +43,9 @@ fn gen_moves_raw(board: &mut Board, mask: &GenMask) -> Vec<ChessMove> {
                 match piece.piece_type {
                     crate::PieceType::Pawn => {
                         // pawn move forward normal
-                        // if let Some(target) = board.get(square.up(1, None).unwrap().dest) {
+                        if let Some(target) = board.get(square.up(1, None).unwrap().dest) {
 
-                        // }
+                        }
                         // pawn move forward double
 
                         // pawn takes

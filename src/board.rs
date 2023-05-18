@@ -52,7 +52,7 @@ impl Board {
     }
 
     /// return empty [Board] (invalid for starting [crate::Game]) use for building chess position
-    fn empty(turn: Color) -> Self {
+    pub fn empty(turn: Color) -> Self {
         let pos = [[None; 8]; 8];
 
         Board {
@@ -72,6 +72,17 @@ impl Board {
     pub fn remove_piece(&mut self, index: Square) -> &mut Board {
         *self.get_mut(index) = None;
         self
+    }
+
+    /// get [`Option<Square>`] from reference on piece
+    pub fn get_square(&self, piece: &Option<Piece>) -> Option<Square> {
+        for i in 0..64usize {
+            let sq = Square(i);
+            if std::ptr::eq(self.get(sq), piece) {
+                return Some(sq);
+            }
+        }
+        None
     }
 
     /// get reference to specific [`Option<Piece>`] on the [Board]
@@ -119,6 +130,78 @@ impl Board {
 
         all.into_iter()
     }
+
+    /*
+    /// Create [ChessMove] from [Square] to n squares up.
+    pub(crate) fn move_piece_up(
+        &self,
+        piece: &Option<Piece>,
+        mul: i32,
+        promo: Option<PieceType>,
+    ) -> Result<ChessMove, &'static str> {
+        if let Some(p) = piece {
+            let sq = self.get_square(piece);
+            if p.color == Color::White {
+
+            } else {
+
+            }
+        }
+    }
+
+    /// Create [ChessMove] from [Square] to n squares down.
+    pub fn down(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+        if self.color == Color::White {
+        } else {
+        }
+    }
+
+    /// Create [ChessMove] from [Square] to n squares right.
+    pub fn right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+        if self.color == Color::White {
+        } else {
+        }
+    }
+
+    /// Create [ChessMove] from [Square] to n squares left.
+    pub fn left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+        if self.color == Color::White {
+        } else {
+        }
+    }
+
+    /// Create [ChessMove] from [Square] to n squares right and down.
+    pub fn down_right(
+        &self,
+        mul: i32,
+        promo: Option<PieceType>,
+    ) -> Result<ChessMove, &'static str> {
+        if self.color == Color::White {
+        } else {
+        }
+    }
+
+    /// Create [ChessMove] from [Square] to n squares left and down.
+    pub fn down_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+        if self.color == Color::White {
+        } else {
+        }
+    }
+
+    /// Create [ChessMove] from [Square] to n squares right and up.
+    pub fn up_right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+        if self.color == Color::White {
+        } else {
+        }
+    }
+
+    /// Create [ChessMove] from [Square] to n squares left and up.
+    pub fn up_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+        if self.color == Color::White {
+        } else {
+        }
+    }
+     */
 
     pub fn is_valid(turn: Color) -> bool {
         todo!()

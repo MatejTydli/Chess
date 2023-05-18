@@ -30,8 +30,4 @@ impl ChessMove {
         }
         false
     }
-
-    /*
-    , promo: Option<PieceType>, spec_req: fn(&mut Board)
-     */
 }

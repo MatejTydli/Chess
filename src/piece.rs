@@ -1,4 +1,6 @@
+use crate::ChessMove;
 use crate::Color;
+use crate::Square;
 
 /// represent type of piece
 #[derive(Clone, Copy, Debug, PartialEq)]

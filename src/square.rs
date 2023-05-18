@@ -35,7 +35,6 @@ impl Square {
     /// Returning [Result].
     /// Create a new instance of [ChessMove] from [Square] destination that is moved n squares up.
     /// Return [Err] if [Square] is out of bounds of board.
-    #[inline]
     fn create_move(
         &self,
         sq_i: usize,
@@ -53,7 +52,6 @@ impl Square {
 
     /// Simplifie the procces of creating diagonal move.
     /// Centralize the error catching, which is same for every diagonal move. 
-    #[inline]
     fn create_diagonal_move(
         &self,
         sq_i: usize,
@@ -71,20 +69,17 @@ impl Square {
     }
 
     /// Create [ChessMove] from [Square] to n squares up.
-    #[inline]
-    pub fn up(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+    pub(crate) fn up(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_move((self.0 as i32 - 8 * mul) as usize, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares down.
-    #[inline]
-    pub fn down(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+    pub(crate) fn down(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_move((self.0 as i32 + 8 * mul) as usize, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares right.
-    #[inline]
-    pub fn right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+    pub(crate) fn right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         let sq = Square((self.0 as i32 + mul) as usize);
         if self.get_rank().unwrap() != sq.get_rank().unwrap() {
             return Square::CREATE_MOVE_ERR;
@@ -93,8 +88,7 @@ impl Square {
     }
 
     /// Create [ChessMove] from [Square] to n squares left.
-    #[inline]
-    pub fn left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+    pub(crate) fn left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         let sq = Square((self.0 as i32 - mul) as usize);
         if self.get_rank().unwrap() != self.get_rank().unwrap() {
             return Square::CREATE_MOVE_ERR;
@@ -103,8 +97,7 @@ impl Square {
     }
 
     /// Create [ChessMove] from [Square] to n squares right and down.
-    #[inline]
-    pub fn down_right(
+    pub(crate) fn down_right(
         &self,
         mul: i32,
         promo: Option<PieceType>,
@@ -113,20 +106,17 @@ impl Square {
     }
 
     /// Create [ChessMove] from [Square] to n squares left and down.
-    #[inline]
-    pub fn down_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+    pub(crate) fn down_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_diagonal_move((self.0 as i32 + 7 * mul) as usize, mul, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares right and up.
-    #[inline]
-    pub fn up_right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+    pub(crate) fn up_right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_diagonal_move((self.0 as i32 - 7 * mul) as usize, mul, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares left and up.
-    #[inline]
-    pub fn up_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
+    pub(crate) fn up_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
         self.create_diagonal_move((self.0 as i32 - 9 * mul) as usize, mul, promo)
     }
 

@@ -10,11 +10,8 @@
 //! ```
 //! Read `README.md` for more info.
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum Color {
-    White,
-    Black
-}
+mod color;
+pub use crate::color::*;
 
 mod board;
 pub use crate::board::*;

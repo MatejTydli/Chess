@@ -40,17 +40,37 @@ fn gen_moves_raw(board: &mut Board, mask: &GenMask) -> Vec<ChessMove> {
         let square = Square(u);
         if let Some(piece) = board.get(square) {
             if mask.compare(piece.color) {
+                let opponent_color = piece.color.inverse();
+
                 match piece.piece_type {
                     crate::PieceType::Pawn => {
-                        // pawn move forward normal
-                        if let Some(target) = board.get(square.up(1, None).unwrap().dest) {
-
+                        // # pawn move forward normal
+                        // pawn forward move can be unwraped directly,
+                        // beacuse pawn can't get outside of board (promoting).
+                        let pot_forward = square.up(1, None).unwrap();
+                        let mut pot_forward_pushed = false;
+                        if let None = board.get(pot_forward.dest) {
+                            moves.push(pot_forward);
+                            pot_forward_pushed = true;
                         }
-                        // pawn move forward double
 
-                        // pawn takes
+                        // # pawn move forward double
+                        // if forward isn'tpossible than double isn't possible too 
+                        if pot_forward_pushed {
+                            let pot_forward_d = square.up(2, None).unwrap();
+                            if let None = board.get(pot_forward_d.dest) {
+                                moves.push(pot_forward_d);
+                            }
+                        }
 
-                        // pawn takes en passatns
+                        // # pawn takes
+                        // let pot_forward_d = square.up(2, None).unwrap();
+                        // if let None = board.get(pot_forward_d.dest) {
+                        //     moves.push(pot_forward_d);
+                        // }
+
+                        // # pawn takes en passatns
+
                     }
                     crate::PieceType::Knight => todo!(),
                     crate::PieceType::Bishop => todo!(),

@@ -132,28 +132,29 @@ impl Board {
         all.into_iter()
     }
 
+    /// Pre-function to square move functions.
+    /// Switches perspective of piece by piece color.
     fn move_piece(
         &self,
         piece: &Option<Piece>,
         mul: i32,
         promo: Option<PieceType>,
-        first: fn(&Square, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str>,
-        second: fn(&Square, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str>,
+        white: fn(&Square, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str>,
+        black: fn(&Square, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str>,
     ) -> Result<ChessMove, &'static str> {
         if let Some(p) = piece {
             let sq = self.get_square(piece).unwrap();
             if p.color == Color::White {
-                first(&sq, mul, promo)
+                white(&sq, mul, promo)
             } else {
-                second(&sq, mul, promo)
+                black(&sq, mul, promo)
             }
         } else {
             Err("Piece not found on the board.")
         }
     }
 
-    /// Create [ChessMove] from [Square] to n squares up.
-    pub(crate) fn move_piece_up(
+    pub(crate) fn up(
         &self,
         piece: &Option<Piece>,
         mul: i32,
@@ -162,76 +163,70 @@ impl Board {
         self.move_piece(piece, mul, promo, Square::up, Square::down)
     }
 
-    /// Create [ChessMove] from [Square] to n squares down.
-    pub fn down(
+    pub(crate) fn down(
         &self,
         piece: &Option<Piece>,
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up, Square::down)
+        self.move_piece(piece, mul, promo, Square::down, Square::up)
     }
 
-    /// Create [ChessMove] from [Square] to n squares right.
-    pub fn right(
+    pub(crate) fn right(
         &self,
         piece: &Option<Piece>,
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up, Square::down)
+        self.move_piece(piece, mul, promo, Square::right, Square::left)
     }
 
-    /// Create [ChessMove] from [Square] to n squares left.
-    pub fn left(
+    pub(crate) fn left(
         &self,
         piece: &Option<Piece>,
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up, Square::down)
+        self.move_piece(piece, mul, promo, Square::left, Square::right)
     }
 
-    /// Create [ChessMove] from [Square] to n squares right and down.
-    pub fn down_right(
+    pub(crate) fn up_right(
         &self,
         piece: &Option<Piece>,
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up, Square::down)
+        self.move_piece(piece, mul, promo, Square::up_right, Square::down_left)
     }
 
-    /// Create [ChessMove] from [Square] to n squares left and down.
-    pub fn down_left(
+    pub(crate) fn up_left(
         &self,
         piece: &Option<Piece>,
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up, Square::down)
+        self.move_piece(piece, mul, promo, Square::up_left, Square::down_right)
     }
 
-    /// Create [ChessMove] from [Square] to n squares right and up.
-    pub fn up_right(
+    pub(crate) fn down_right(
         &self,
         piece: &Option<Piece>,
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up, Square::down)
+        self.move_piece(piece, mul, promo, Square::down_right, Square::up_left)
     }
 
-    /// Create [ChessMove] from [Square] to n squares left and up.
-    pub fn up_left(
+    pub(crate) fn down_left(
         &self,
         piece: &Option<Piece>,
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up, Square::down)
+        self.move_piece(piece, mul, promo, Square::down_left, Square::up_right)
     }
 
+    /*
     pub fn is_valid(turn: Color) -> bool {
         todo!()
     }
@@ -247,4 +242,5 @@ impl Board {
     pub(crate) fn is_draw() -> bool {
         todo!()
     }
+    */
 }

@@ -70,12 +70,12 @@ impl Square {
 
     /// Create [ChessMove] from [Square] to n squares up.
     pub(crate) fn up(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
-        self.create_move((self.0 as i32 - 8 * mul) as usize, promo)
+        self.create_move((self.0 as i32 + 8 * mul) as usize, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares down.
     pub(crate) fn down(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
-        self.create_move((self.0 as i32 + 8 * mul) as usize, promo)
+        self.create_move((self.0 as i32 - 8 * mul) as usize, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares right.
@@ -102,22 +102,22 @@ impl Square {
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        self.create_diagonal_move((self.0 as i32 + 9 * mul) as usize, mul, promo)
+        self.create_diagonal_move((self.0 as i32 - 9 * mul) as usize, mul, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares left and down.
     pub(crate) fn down_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
-        self.create_diagonal_move((self.0 as i32 + 7 * mul) as usize, mul, promo)
+        self.create_diagonal_move((self.0 as i32 - 7 * mul) as usize, mul, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares right and up.
     pub(crate) fn up_right(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
-        self.create_diagonal_move((self.0 as i32 - 7 * mul) as usize, mul, promo)
+        self.create_diagonal_move((self.0 as i32 + 9 * mul) as usize, mul, promo)
     }
 
     /// Create [ChessMove] from [Square] to n squares left and up.
     pub(crate) fn up_left(&self, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str> {
-        self.create_diagonal_move((self.0 as i32 - 9 * mul) as usize, mul, promo)
+        self.create_diagonal_move((self.0 as i32 + 7 * mul) as usize, mul, promo)
     }
 
     /// built in constant A1 [Square] for easy indexing to [Board]

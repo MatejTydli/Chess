@@ -47,7 +47,7 @@ fn gen_moves_raw(board: &mut Board, mask: &GenMask) -> Vec<ChessMove> {
                         // # pawn move forward normal
                         // pawn forward move can be unwraped directly,
                         // beacuse pawn can't get outside of board (promoting).
-                        let pot_forward = square.up(1, None).unwrap();
+                        let pot_forward = board.up(&Some(*piece), 1, None).unwrap();
                         let mut pot_forward_pushed = false;
                         if let None = board.get(pot_forward.dest) {
                             moves.push(pot_forward);

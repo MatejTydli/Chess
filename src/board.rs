@@ -11,12 +11,14 @@ use crate::Square;
 #[derive(Clone, Debug, PartialEq)]
 pub struct Board {
     pos: [[Option<Piece>; 8]; 8],
-    history: Vec<[[Option<Piece>; 8]; 8]>,
+    pub(crate) history: Vec<[[Option<Piece>; 8]; 8]>,
     turn: Color,
+    pub pawn_promo: PieceType,
 }
 
 impl Board {
-    /// setup [Board] position to deaufult chess position
+    /// Setup [Board] position to deaufult chess position.
+    /// Deafult pawn_promo is set to Queen.
     pub fn deafult() -> Board {
         let army = [
             PieceType::Rook,
@@ -52,7 +54,8 @@ impl Board {
         board
     }
 
-    /// return empty [Board] (invalid for starting [crate::Game]) use for building chess position
+    /// Return empty [Board] (invalid for starting [crate::Game]) use for building chess position.
+    /// Deafult pawn_promo is set to Queen.
     pub fn empty(turn: Color) -> Self {
         let pos = [[None; 8]; 8];
 
@@ -60,6 +63,7 @@ impl Board {
             pos,
             history: Vec::new(),
             turn,
+            pawn_promo: PieceType::Queen,
         }
     }
 
@@ -92,7 +96,7 @@ impl Board {
     }
 
     /// get mutable reference to specific [Option<Piece>] on the [Board]
-    pub(crate) fn get_mut(&mut self, index: Square) -> &mut Option<Piece> {
+    fn get_mut(&mut self, index: Square) -> &mut Option<Piece> {
         &mut self.pos[index.0 / 8][index.0 % 8]
     }
 
@@ -224,6 +228,16 @@ impl Board {
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
         self.move_piece(piece, mul, promo, Square::down_left, Square::up_right)
+    }
+
+    pub fn make_move(&mut self, mv: ChessMove) {
+        let maybe_piece = *self.get(mv.start);
+        if let Some(piece) = maybe_piece {
+            maybe_piece.unwrap().piece_type = self.pawn_promo;
+        }
+
+        self.place_piece(mv.dest, maybe_piece);
+        self.place_piece(mv.start, None);
     }
 
     /*

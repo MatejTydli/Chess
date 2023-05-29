@@ -7,9 +7,9 @@ use crate::gen_moves;
 /// Represent a chess move, stores info about move (start, destination, promotion).   
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChessMove {
-    start: Square,
+    pub(crate) start: Square,
     pub(crate) dest: Square,
-    promo: Option<PieceType>,
+    pub(crate) promo: Option<PieceType>,
 }
 
 impl ChessMove {

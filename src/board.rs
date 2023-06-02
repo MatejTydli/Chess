@@ -7,12 +7,14 @@ use crate::Rank;
 use crate::Square;
 
 /// [Board] stores position and history of position.
-/// Position is represent by array of [Option]<[Piece]>, with unchangeable size of 8x8.
+/// Position is represent by array of [Option<Piece>], with unchangeable size of 8x8.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Board {
     pos: [[Option<Piece>; 8]; 8],
-    pub(crate) history: Vec<[[Option<Piece>; 8]; 8]>,
     turn: Color,
+    /// Record all moves. Doesn't contains current position(Current is in board.pos). 
+    history: Vec<[[Option<Piece>; 8]; 8]>,
+    /// Sets new [PieceType] of promoted pawn.
     pub pawn_promo: PieceType,
 }
 
@@ -54,7 +56,7 @@ impl Board {
         board
     }
 
-    /// Return empty [Board] (invalid for starting [crate::Game]) use for building chess position.
+    /// Return empty [Board] use for building chess position.
     /// Deafult pawn_promo is set to Queen.
     pub fn empty(turn: Color) -> Self {
         let pos = [[None; 8]; 8];
@@ -67,19 +69,19 @@ impl Board {
         }
     }
 
-    /// Place(or replace) piece on board
+    /// Place(or replace) piece on board(doesn't included in history).
     pub fn place_piece(&mut self, index: Square, piece: Option<Piece>) -> &mut Board {
         *self.get_mut(index) = piece;
         self
     }
 
-    /// Remove piece on board
+    /// Remove piece on board(doesn't included in history).
     pub fn remove_piece(&mut self, index: Square) -> &mut Board {
         *self.get_mut(index) = None;
         self
     }
 
-    /// get [`Option<Square>`] from reference on piece
+    /// Get [Option<Square>] from reference on piece.
     pub fn get_square(&self, piece: &Option<Piece>) -> Option<Square> {
         for i in 0..64usize {
             let sq = Square(i);
@@ -90,24 +92,29 @@ impl Board {
         None
     }
 
-    /// get reference to specific [`Option<Piece>`] on the [Board]
+    /// Get reference to specific [Option<Piece>] on the [Board].
     pub fn get(&self, index: Square) -> &Option<Piece> {
         &self.pos[index.0 / 8][index.0 % 8]
     }
 
-    /// get mutable reference to specific [Option<Piece>] on the [Board]
+    /// Get reference to specific [Option<Piece>] on the [Board] from last history record. 
+    pub fn get_last_from_history(&self, index: Square) -> &Option<Piece> {
+        &self.history[self.history.len() - 1][index.0 / 8][index.0 % 8]
+    }
+
+    /// Get mutable reference to specific [Option<Piece>] on the [Board].
     fn get_mut(&mut self, index: Square) -> &mut Option<Piece> {
         &mut self.pos[index.0 / 8][index.0 % 8]
     }
 
-    /// get reference to specific rank on the [Board]
+    /// Get reference to specific rank on the [Board].
     pub fn get_rank(&self, rank: Rank) -> &[Option<Piece>; 8] {
         &self.pos[rank.to_usize()]
     }
 
-    /// get mutable reference to specific rank on the [Board]
-    pub(crate) fn get_mut_rank(&mut self, rank: Rank) -> &mut [Option<Piece>; 8] {
-        &mut self.pos[rank.to_usize()]
+    /// Get refernce to history.
+    pub fn get_history(&self) -> &Vec<[[Option<Piece>; 8]; 8]> {
+        &self.history
     }
 
     /// Iterate over whole [Board] with reference.
@@ -136,101 +143,10 @@ impl Board {
         all.into_iter()
     }
 
-    /// Pre-function to square move functions.
-    /// Switches perspective of piece by piece color.
-    fn move_piece(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-        white: fn(&Square, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str>,
-        black: fn(&Square, mul: i32, promo: Option<PieceType>) -> Result<ChessMove, &'static str>,
-    ) -> Result<ChessMove, &'static str> {
-        if let Some(p) = piece {
-            let sq = self.get_square(piece).unwrap();
-            if p.color == Color::White {
-                white(&sq, mul, promo)
-            } else {
-                black(&sq, mul, promo)
-            }
-        } else {
-            Err("Piece not found on the board.")
-        }
-    }
-
-    pub(crate) fn up(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-    ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up, Square::down)
-    }
-
-    pub(crate) fn down(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-    ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::down, Square::up)
-    }
-
-    pub(crate) fn right(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-    ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::right, Square::left)
-    }
-
-    pub(crate) fn left(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-    ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::left, Square::right)
-    }
-
-    pub(crate) fn up_right(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-    ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up_right, Square::down_left)
-    }
-
-    pub(crate) fn up_left(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-    ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::up_left, Square::down_right)
-    }
-
-    pub(crate) fn down_right(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-    ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::down_right, Square::up_left)
-    }
-
-    pub(crate) fn down_left(
-        &self,
-        piece: &Option<Piece>,
-        mul: i32,
-        promo: Option<PieceType>,
-    ) -> Result<ChessMove, &'static str> {
-        self.move_piece(piece, mul, promo, Square::down_left, Square::up_right)
-    }
-
+    /// Make move and save new position to history.
     pub fn make_move(&mut self, mv: ChessMove) {
+        self.history.push(self.pos);
+
         let maybe_piece = *self.get(mv.start);
         if let Some(piece) = maybe_piece {
             maybe_piece.unwrap().piece_type = self.pawn_promo;

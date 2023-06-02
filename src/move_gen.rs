@@ -1,4 +1,4 @@
-//! The moust interesting and the moust complex, part of the library.
+//! The moust interesting and the moust complex(spaghetti), part of the library.
 
 use crate::Board;
 use crate::ChessMove;
@@ -30,87 +30,101 @@ impl GenMask {
     }
 }
 
-/// Create valid moves from [Board], depends on [GenMask].
-pub fn gen_moves(board: &Board, mask: &GenMask) -> Vec<ChessMove> {
-    todo!()
-}
+impl Board {
+    /// Create valid moves from [Board], depends on [GenMask].
+    pub fn gen_moves(&self, mask: &GenMask) -> Vec<ChessMove> {
+        todo!()
+    }
 
-/// Create valid moves from [Board], but not take checks in to account. Depends on [GenMask].
-fn gen_moves_raw(board: &mut Board, mask: GenMask) -> Vec<ChessMove> {
-    let mut moves = Vec::new();
+    /// Create valid moves from [Board], but not take checks in to account. Depends on [GenMask].
+    fn gen_moves_raw(&self, mask: GenMask) -> Vec<ChessMove> {
+        let mut moves = Vec::new();
 
-    for u in 0..64usize {
-        let square = Square(u);
-        let piece_raw = board.get(square);
+        for u in 0..64usize {
+            let square = Square(u);
+            let piece_raw = self.get(square);
 
-        if let Some(piece) = piece_raw {
-            if mask.compare(piece.color) {
-                let opponent_color = piece.color.inverse();
+            if let Some(piece) = piece_raw {
+                if mask.compare(piece.color) {
+                    let opponent_color = piece.color.inverse();
 
-                match piece.piece_type {
-                    crate::PieceType::Pawn => {
-                        // set pawn promo from board.pawn_promo
-                        // if pawn stand on sevent or second rank (depends on color)
-                        let mut promo = None;
-                        if square.get_rank().unwrap()
-                            == if piece.color == Color::White {
-                                Rank::Seventh
-                            } else {
-                                Rank::Second
-                            }
-                        {
-                            promo = Some(board.pawn_promo);
-                        }
+                    match piece.piece_type {
+                        crate::PieceType::Pawn => {
+                            // decide if pawn stand on sevent or second rank (depends on color)
+                            let is_on_start = square.get_rank().unwrap()
+                                == if piece.color == Color::White {
+                                    Rank::Second
+                                } else {
+                                    Rank::Seventh
+                                };
 
-                        // # pawn move up normal
-                        // pawn up (x1) move can be unwraped directly,
-                        // beacuse pawn can't get outside of board (promoting).
-                        let pot_up = board.up(piece_raw, 1, promo).unwrap();
-
-                        if *board.get(pot_up.dest) == None {
-                            moves.push(pot_up);
-
-                            // # pawn move up double
-                            let pot_up_d = board.up(piece_raw, 2, promo);
-                            if square.get_rank().unwrap()
+                            let is_on_end = square.get_rank().unwrap()
                                 == if piece.color == Color::White {
                                     Rank::Seventh
                                 } else {
                                     Rank::Second
+                                };
+
+                            // set pawn promo from self.pawn_promo
+                            let mut promo = match is_on_end {
+                                true => Some(self.pawn_promo),
+                                false => None,
+                            };
+
+                            // # pawn move up normal
+                            // pawn up (x1) move can be unwraped directly,
+                            // beacuse pawn can't get outside of board (promoting).
+                            let pot_up = ChessMove::up(self, piece_raw, 1, promo).unwrap();
+
+                            if *self.get(pot_up.dest) == None {
+                                moves.push(pot_up);
+                                // # pawn move up double
+                                if is_on_start {
+                                    moves.push(ChessMove::up(self, piece_raw, 2, promo).unwrap());
                                 }
+                            }
+
+                            // # pawn takes
+                            if let Ok(pot_up_left) = ChessMove::up_left(self, piece_raw, 1, promo) {
+                                if let Some(target) = *self.get(pot_up_left.dest) {
+                                    if target.color != piece.color {
+                                        moves.push(pot_up_left);
+                                    }
+                                } else {
+                                    // # pawn takes en passatns
+                                    if let Ok(left_check) =
+                                        ChessMove::left(self, piece_raw, 1, promo)
+                                    {
+                                        let maybe_en_target = self.get(left_check.dest);
+                                        if let Some(en_target) = maybe_en_target {
+                                            if let Some(last_target) = self.get_last_from_history(/*continue here with*/) {
+                                                
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if let Ok(pot_up_right) = ChessMove::up_right(self, piece_raw, 1, promo)
                             {
-                                moves.push(pot_up_d.unwrap());
-                            }
-                        }
-
-                        // # pawn takes
-                        if let Ok(pot_up_left) = board.up_left(piece_raw, 1, promo) {
-                            if let Some(target) = *board.get(pot_up_left.dest) {
-                                if target.color != piece.color {
-                                    moves.push(pot_up_left);
+                                if let Some(target) = *self.get(pot_up_right.dest) {
+                                    if target.color != piece.color {
+                                        moves.push(pot_up_right);
+                                    }
+                                } else {
+                                    // # pawn takes en passatns
                                 }
                             }
                         }
-                        if let Ok(pot_up_right) = board.up_right(piece_raw, 1, promo) {
-                            if let Some(target) = *board.get(pot_up_right.dest) {
-                                if target.color != piece.color {
-                                    moves.push(pot_up_right);
-                                }
-                            }
-                        }
-
-                        // # pawn takes en passatns
-                        // ## continue here
+                        crate::PieceType::Knight => todo!(),
+                        crate::PieceType::Bishop => todo!(),
+                        crate::PieceType::Rook => todo!(),
+                        crate::PieceType::Queen => todo!(),
+                        crate::PieceType::King => todo!(),
                     }
-                    crate::PieceType::Knight => todo!(),
-                    crate::PieceType::Bishop => todo!(),
-                    crate::PieceType::Rook => todo!(),
-                    crate::PieceType::Queen => todo!(),
-                    crate::PieceType::King => todo!(),
                 }
             }
         }
-    }
 
-    moves
+        moves
+    }
 }

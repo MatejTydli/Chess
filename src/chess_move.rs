@@ -8,9 +8,9 @@ use crate::Square;
 /// Represent a chess move, stores info about move (start, destination, promotion).   
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChessMove {
-    pub(crate) start: Square,
-    pub(crate) dest: Square,
-    pub(crate) promo: Option<PieceType>,
+    pub start: Square,
+    pub dest: Square,
+    pub promo: Option<PieceType>,
 }
 
 impl ChessMove {
@@ -25,7 +25,7 @@ impl ChessMove {
 
     /// Check if move is valid to current position on board.
     pub fn is_valid(&self, board: &Board) -> bool {
-        board.gen_moves(&GenMask::Both).contains(self)
+        board.gen_moves(GenMask::Both).contains(self)
     }
 
     /// Pre-function to square move functions.

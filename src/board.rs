@@ -12,8 +12,8 @@ use crate::Square;
 pub struct Board {
     pos: [[Option<Piece>; 8]; 8],
     turn: Color,
-    /// Record all moves. Doesn't contains current position(Current is in board.pos). 
-    history: Vec<[[Option<Piece>; 8]; 8]>,
+    /// Record all moves. Doesn't contains current position(Current is in board.pos).
+    pub history: Vec<[[Option<Piece>; 8]; 8]>,
     /// Sets new [PieceType] of promoted pawn.
     pub pawn_promo: PieceType,
 }
@@ -52,6 +52,16 @@ impl Board {
                 color: Color::Black,
             });
         }
+
+        board.pos[1] = [Some(Piece {
+            piece_type: PieceType::Pawn,
+            color: Color::White,
+        }); 8];
+
+        board.pos[6] = [Some(Piece {
+            piece_type: PieceType::Pawn,
+            color: Color::Black,
+        }); 8];
 
         board
     }
@@ -97,8 +107,8 @@ impl Board {
         &self.pos[index.0 / 8][index.0 % 8]
     }
 
-    /// Get reference to specific [Option<Piece>] on the [Board] from last history record. 
-    pub fn get_last_from_history(&self, index: Square) -> &Option<Piece> {
+    /// Get reference to specific [Option<Piece>] on the [Board] from last history record.
+    pub fn get_from_previous(&self, index: Square) -> &Option<Piece> {
         &self.history[self.history.len() - 1][index.0 / 8][index.0 % 8]
     }
 
@@ -108,8 +118,8 @@ impl Board {
     }
 
     /// Get reference to specific rank on the [Board].
-    pub fn get_rank(&self, rank: Rank) -> &[Option<Piece>; 8] {
-        &self.pos[rank.to_usize()]
+    pub fn get_mut_rank(&mut self, rank: Rank) -> &mut [Option<Piece>; 8] {
+        &mut self.pos[rank.to_usize()]
     }
 
     /// Get refernce to history.

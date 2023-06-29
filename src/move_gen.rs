@@ -32,8 +32,8 @@ impl GenMask {
 
 impl Board {
     /// Create valid moves from [Board], depends on [GenMask].
-    pub fn gen_moves(&self, mask: &GenMask) -> Vec<ChessMove> {
-        todo!()
+    pub fn gen_moves(&self, mask: GenMask) -> Vec<ChessMove> {
+        self.gen_moves_raw(mask) // only for testing, later added check logic here
     }
 
     /// Create valid moves from [Board], but not take checks in to account. Depends on [GenMask].
@@ -46,7 +46,7 @@ impl Board {
 
             if let Some(piece) = piece_raw {
                 if mask.compare(piece.color) {
-                    let opponent_color = piece.color.inverse();
+                    // let opponent_color = piece.color.inverse(); also commented out in color.rs
 
                     match piece.piece_type {
                         crate::PieceType::Pawn => {
@@ -90,15 +90,31 @@ impl Board {
                                     if target.color != piece.color {
                                         moves.push(pot_up_left);
                                     }
-                                } else {
+                                } else if square.get_rank().unwrap()
+                                    == if piece.color == Color::White {
+                                        Rank::Fifth
+                                    } else {
+                                        Rank::Fourth
+                                    }
+                                {
                                     // # pawn takes en passatns
                                     if let Ok(left_check) =
                                         ChessMove::left(self, piece_raw, 1, promo)
                                     {
                                         let maybe_en_target = self.get(left_check.dest);
                                         if let Some(en_target) = maybe_en_target {
-                                            if let Some(last_target) = self.get_last_from_history(/*continue here with*/) {
-                                                
+                                            let previous_sq =
+                                                ChessMove::up(self, maybe_en_target, 2, None)
+                                                    .unwrap()
+                                                    .dest;
+                                            if let Some(previous_target) =
+                                                self.get_from_previous(previous_sq)
+                                            {
+                                                moves.push(ChessMove::new(
+                                                    square,
+                                                    previous_sq,
+                                                    None,
+                                                ))
                                             }
                                         }
                                     }
@@ -110,16 +126,45 @@ impl Board {
                                     if target.color != piece.color {
                                         moves.push(pot_up_right);
                                     }
-                                } else {
+                                } else if self.get_square(piece_raw).unwrap().get_rank().unwrap()
+                                    == if piece.color == Color::White {
+                                        Rank::Fifth
+                                    } else {
+                                        Rank::Fourth
+                                    }
+                                {
                                     // # pawn takes en passatns
+                                    if let Ok(right_check) =
+                                        ChessMove::right(self, piece_raw, 1, promo)
+                                    {
+                                        let maybe_en_target = self.get(right_check.dest);
+                                        if let Some(en_target) = maybe_en_target {
+                                            let previous_sq =
+                                                ChessMove::up(self, maybe_en_target, 2, None)
+                                                    .unwrap()
+                                                    .dest;
+                                            if let Some(previous_target) =
+                                                self.get_from_previous(previous_sq)
+                                            {
+                                                moves.push(ChessMove::new(
+                                                    self.get_square(piece_raw).unwrap(),
+                                                    previous_sq,
+                                                    None,
+                                                ))
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
+                        _ => {}
+                        /*
                         crate::PieceType::Knight => todo!(),
                         crate::PieceType::Bishop => todo!(),
                         crate::PieceType::Rook => todo!(),
                         crate::PieceType::Queen => todo!(),
                         crate::PieceType::King => todo!(),
+                        */
                     }
                 }
             }

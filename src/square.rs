@@ -19,13 +19,13 @@ impl Square {
 
     /// Extract [Rank] from [Square], return [Result].
     /// Return [Err] when [Square] is not valid (it's outside the [Board]).
-    pub(crate) fn get_rank(&self) -> Result<Rank, &str> {
+    pub fn get_rank(&self) -> Result<Rank, &str> {
         Rank::try_from_usize(self.0 / 8)
     }
 
     /// Extract [File] from [Square], return [Result].
     /// Return [Err] when [Square] is not valid (it's outside the [Board]).
-    pub(crate) fn get_file(&self) -> Result<File, &str> {
+    pub fn get_file(&self) -> Result<File, &str> {
         File::try_from_usize(self.0 % 8)
     }
 

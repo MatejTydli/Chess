@@ -158,12 +158,41 @@ impl Board {
         self.history.push(self.pos);
 
         let maybe_piece = *self.get(mv.start);
+        let mut en_passant = false;
         if let Some(piece) = maybe_piece {
+            if mv.start.get_rank().unwrap()
+                == if piece.color == Color::White {
+                    Rank::Fifth
+                } else {
+                    Rank::Fourth
+                }
+                && mv.dest.get_rank().unwrap()
+                    == if piece.color == Color::White {
+                        Rank::Sixth
+                    } else {
+                        Rank::Third
+                    }
+                && *self.get(mv.dest) == None
+                && piece.piece_type == PieceType::Pawn
+            {
+                // en passant
+                en_passant = true;
+            }
+
             maybe_piece.unwrap().piece_type = self.pawn_promo;
         }
 
         self.place_piece(mv.dest, maybe_piece);
         self.place_piece(mv.start, None);
+        // en passant
+        if en_passant {
+            self.place_piece(
+                ChessMove::down(&self, self.get(mv.dest), 1, None)
+                    .unwrap()
+                    .dest,
+                None,
+            );
+        }
     }
 
     /*

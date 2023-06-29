@@ -104,17 +104,14 @@ impl Board {
                                         let maybe_en_target = self.get(left_check.dest);
                                         if let Some(en_target) = maybe_en_target {
                                             let previous_sq =
-                                                ChessMove::up(self, maybe_en_target, 2, None)
+                                                ChessMove::down(self, maybe_en_target, 2, None)
                                                     .unwrap()
                                                     .dest;
                                             if let Some(previous_target) =
                                                 self.get_from_previous(previous_sq)
                                             {
-                                                moves.push(ChessMove::new(
-                                                    square,
-                                                    previous_sq,
-                                                    None,
-                                                ))
+                                                // takes en passatns
+                                                moves.push(pot_up_left);
                                             }
                                         }
                                     }
@@ -146,18 +143,14 @@ impl Board {
                                             if let Some(previous_target) =
                                                 self.get_from_previous(previous_sq)
                                             {
-                                                moves.push(ChessMove::new(
-                                                    self.get_square(piece_raw).unwrap(),
-                                                    previous_sq,
-                                                    None,
-                                                ))
+                                                moves.push(pot_up_right);
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        _ => {}
+                        _ => {} 
                         /*
                         crate::PieceType::Knight => todo!(),
                         crate::PieceType::Bishop => todo!(),

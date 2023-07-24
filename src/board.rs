@@ -41,7 +41,7 @@ impl Board {
                 File::try_from_usize(i).unwrap(),
             )) = Some(Piece {
                 piece_type: army[i],
-                color: Color::White,
+                color: Color::Black,
             });
 
             *board.get_mut(Square::new(
@@ -49,18 +49,18 @@ impl Board {
                 File::try_from_usize(i).unwrap(),
             )) = Some(Piece {
                 piece_type: army[i],
-                color: Color::Black,
+                color: Color::White,
             });
         }
 
         board.pos[1] = [Some(Piece {
             piece_type: PieceType::Pawn,
-            color: Color::White,
+            color: Color::Black,
         }); 8];
 
         board.pos[6] = [Some(Piece {
             piece_type: PieceType::Pawn,
-            color: Color::Black,
+            color: Color::White,
         }); 8];
 
         board
@@ -157,7 +157,7 @@ impl Board {
     pub fn make_move(&mut self, mv: ChessMove) {
         self.history.push(self.pos);
 
-        let maybe_piece = *self.get(mv.start);
+        let mut maybe_piece = *self.get(mv.start);
         let mut en_passant = false;
         if let Some(piece) = maybe_piece {
             if mv.start.get_rank().unwrap()
@@ -179,7 +179,9 @@ impl Board {
                 en_passant = true;
             }
 
-            maybe_piece.unwrap().piece_type = self.pawn_promo;
+            if let Some(promo) = mv.promo {
+                maybe_piece = Some(Piece::new(promo, piece.color));
+            }
         }
 
         self.place_piece(mv.dest, maybe_piece);

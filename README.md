@@ -20,7 +20,6 @@
 
 ## Limitation
 - You can't create or modify your own pieces
-- You can't do invalid moves
 - You can't make board bigger
 - ...  
 
@@ -34,11 +33,6 @@
 
 ```rust
 ```
-
-### FEN Strings
-
-```rust
-```  
 
 ## Credit
 **ME *lol*!**

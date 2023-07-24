@@ -12,8 +12,8 @@ pub enum File {
 }
 
 impl File {
-    /// function for converting usize to File
-    /// if conversion fails error msg is returned in form of String
+    /// Function for converting [usize] to [File].
+    /// If conversion fails error message is returned in form of [str].
     pub(crate) fn try_from_usize(num: usize) -> Result<Self, &'static str> {
         match num {
             0 => Ok(Self::A),
@@ -28,17 +28,17 @@ impl File {
         }
     }
 
-    /// converts File to usize
+    /// Converts [File] to [usize].
     pub(crate) fn to_usize(&self) -> usize {
         match self {
-            Self::A => 0,
-            Self::B => 1,
-            Self::C => 2,
-            Self::D => 3,
-            Self::E => 4,
-            Self::F => 5,
-            Self::G => 6,
-            Self::H => 7,
+            Self::A => 7,
+            Self::B => 6,
+            Self::C => 5,
+            Self::D => 4,
+            Self::E => 3,
+            Self::F => 2,
+            Self::G => 1,
+            Self::H => 0,
         }
     }
 }

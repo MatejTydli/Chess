@@ -10,34 +10,43 @@ use crate::Square;
 
 /// Masks represents differnet types of generating moves via gen_move() function.
 #[derive(Clone, Copy, PartialEq)]
-pub enum GenMask {
+pub enum Mask {
     White,
     Black,
     Both,
 }
 
-impl GenMask {
+impl Mask {
     /// Checks if [Color] is not filtered out.
     fn compare(&self, other: Color) -> bool {
-        if *self == GenMask::Both
-            || (*self == GenMask::White && other == Color::White)
-            || (*self == GenMask::Black && other == Color::Black)
+        if *self == Mask::Both
+            || (*self == Mask::White && other == Color::White)
+            || (*self == Mask::Black && other == Color::Black)
         {
             return true;
         }
 
         false
     }
+
+    /// Inverts [Mask].
+    pub fn inverse(&mut self) {
+        if *self == Mask::White {
+            *self = Mask::Black;
+        } else {
+            *self = Mask::White;
+        }
+    }
 }
 
 impl Board {
-    /// Create valid moves from [Board], depends on [GenMask].
-    pub fn gen_moves(&self, mask: GenMask) -> Vec<ChessMove> {
-        self.gen_moves_raw(mask) // only for testing, later added check logic here
+    /// Create valid moves from [Board], depends on [Mask].
+    pub fn gen_moves(&self, mask: Mask) -> Vec<ChessMove> {
+        self.gen_moves_raw(mask) // only for testing, later added check (and mate) logic here
     }
 
-    /// Create valid moves from [Board], but not take checks in to account. Depends on [GenMask].
-    fn gen_moves_raw(&self, mask: GenMask) -> Vec<ChessMove> {
+    /// Create valid moves from [Board], but not take checks in to account. Depends on [Mask].
+    fn gen_moves_raw(&self, mask: Mask) -> Vec<ChessMove> {
         let mut moves = Vec::new();
 
         for u in 0..64usize {
@@ -99,12 +108,12 @@ impl Board {
                                 {
                                     // # pawn takes en passatns
                                     if let Ok(left_check) =
-                                        ChessMove::left(self, piece_raw, 1, promo)
+                                        ChessMove::right(self, piece_raw, 1, promo)
                                     {
                                         let maybe_en_target = self.get(left_check.dest);
                                         if let Some(en_target) = maybe_en_target {
                                             let previous_sq =
-                                                ChessMove::down(self, maybe_en_target, 2, None)
+                                                ChessMove::up(self, maybe_en_target, 2, None)
                                                     .unwrap()
                                                     .dest;
                                             if let Some(previous_target) =
@@ -132,12 +141,12 @@ impl Board {
                                 {
                                     // # pawn takes en passatns
                                     if let Ok(right_check) =
-                                        ChessMove::right(self, piece_raw, 1, promo)
+                                        ChessMove::left(self, piece_raw, 1, promo)
                                     {
                                         let maybe_en_target = self.get(right_check.dest);
                                         if let Some(en_target) = maybe_en_target {
                                             let previous_sq =
-                                                ChessMove::up(self, maybe_en_target, 2, None)
+                                                ChessMove::down(self, maybe_en_target, 2, None)
                                                     .unwrap()
                                                     .dest;
                                             if let Some(previous_target) =
@@ -150,14 +159,13 @@ impl Board {
                                 }
                             }
                         }
-                        _ => {} 
-                        /*
-                        crate::PieceType::Knight => todo!(),
-                        crate::PieceType::Bishop => todo!(),
-                        crate::PieceType::Rook => todo!(),
-                        crate::PieceType::Queen => todo!(),
-                        crate::PieceType::King => todo!(),
-                        */
+                        _ => {} /*
+                                crate::PieceType::Knight => todo!(),
+                                crate::PieceType::Bishop => todo!(),
+                                crate::PieceType::Rook => todo!(),
+                                crate::PieceType::Queen => todo!(),
+                                crate::PieceType::King => todo!(),
+                                */
                     }
                 }
             }

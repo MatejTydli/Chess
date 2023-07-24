@@ -174,7 +174,6 @@ impl Board {
                                     }
                                 }
                             }
-
                             // down
                             for i in 1..=8 {
                                 if let Ok(pot_down) =
@@ -191,7 +190,6 @@ impl Board {
                                     }
                                 }
                             }
-
                             // left
                             for i in 1..=8 {
                                 if let Ok(pot_left) =
@@ -208,7 +206,6 @@ impl Board {
                                     }
                                 }
                             }
-
                             // right
                             for i in 1..=8 {
                                 if let Ok(pot_right) =
@@ -226,10 +223,249 @@ impl Board {
                                 }
                             }
                         }
-                        crate::PieceType::Bishop => continue,
-                        crate::PieceType::Queen => continue,
-                        crate::PieceType::King => continue,
-                        crate::PieceType::Knight => continue,
+                        crate::PieceType::Bishop => {
+                            // up left
+                            for i in 1..=8 {
+                                if let Ok(pot_up_left) =
+                                    ChessMove::up_left(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_up_left.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_up_left);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_up_left);
+                                    }
+                                }
+                            }
+                            // up right
+                            for i in 1..=8 {
+                                if let Ok(pot_up_right) =
+                                    ChessMove::up_right(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_up_right.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_up_right);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_up_right);
+                                    }
+                                }
+                            }
+                            // down left
+                            for i in 1..=8 {
+                                if let Ok(pot_down_left) =
+                                    ChessMove::down_left(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_down_left.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_down_left);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_down_left);
+                                    }
+                                }
+                            }
+                            // down right
+                            for i in 1..=8 {
+                                if let Ok(pot_down_right) =
+                                    ChessMove::right(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_down_right.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_down_right);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_down_right);
+                                    }
+                                }
+                            }
+                        }
+                        crate::PieceType::Queen => {
+                            // up
+                            for i in 1..=8 {
+                                if let Ok(pot_up) = ChessMove::up(self, piece_raw, i as i32, None) {
+                                    if let Some(p) = self.get(pot_up.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_up);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_up);
+                                    }
+                                }
+                            }
+                            // down
+                            for i in 1..=8 {
+                                if let Ok(pot_down) =
+                                    ChessMove::down(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_down.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_down);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_down);
+                                    }
+                                }
+                            }
+                            // left
+                            for i in 1..=8 {
+                                if let Ok(pot_left) =
+                                    ChessMove::left(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_left.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_left);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_left);
+                                    }
+                                }
+                            }
+                            // right
+                            for i in 1..=8 {
+                                if let Ok(pot_right) =
+                                    ChessMove::right(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_right.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_right);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_right);
+                                    }
+                                }
+                            }
+                            // up left
+                            for i in 1..=8 {
+                                if let Ok(pot_up_left) =
+                                    ChessMove::up_left(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_up_left.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_up_left);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_up_left);
+                                    }
+                                }
+                            }
+                            // up right
+                            for i in 1..=8 {
+                                if let Ok(pot_up_right) =
+                                    ChessMove::up_right(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_up_right.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_up_right);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_up_right);
+                                    }
+                                }
+                            }
+                            // down left
+                            for i in 1..=8 {
+                                if let Ok(pot_down_left) =
+                                    ChessMove::down_left(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_down_left.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_down_left);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_down_left);
+                                    }
+                                }
+                            }
+                            // down right
+                            for i in 1..=8 {
+                                if let Ok(pot_down_right) =
+                                    ChessMove::right(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_down_right.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_down_right);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_down_right);
+                                    }
+                                }
+                            }
+                        }
+                        crate::PieceType::King => {
+                            for m in [
+                                ChessMove::up(self, piece_raw, 1, None),
+                                ChessMove::down(self, piece_raw, 1, None),
+                                ChessMove::left(self, piece_raw, 1, None),
+                                ChessMove::right(self, piece_raw, 1, None),
+                                ChessMove::up_left(self, piece_raw, 1, None),
+                                ChessMove::up_right(self, piece_raw, 1, None),
+                                ChessMove::down_left(self, piece_raw, 1, None),
+                                ChessMove::down_right(self, piece_raw, 1, None),
+                            ] {
+                                if let Ok(pot) = m {
+                                    if let Some(p) = self.get(pot.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot);
+                                        }
+                                    } else {
+                                        moves.push(pot);
+                                    }
+                                }
+                            }
+                        }
+                        crate::PieceType::Knight => {
+                            let pos = self.get_square(piece_raw).unwrap();
+                            for pot_m in [
+                                ChessMove::new(pos, Square(pos.0 - 16 + 1), None),
+                                ChessMove::new(pos, Square(pos.0 - 16 - 1), None),
+                                ChessMove::new(pos, Square(pos.0 + 16 + 1), None),
+                                ChessMove::new(pos, Square(pos.0 + 16 - 1), None),
+                                ChessMove::new(pos, Square(pos.0 + 2 + 8), None),
+                                ChessMove::new(pos, Square(pos.0 + 2 - 8), None),
+                                ChessMove::new(pos, Square(pos.0 - 2 + 8), None),
+                                ChessMove::new(pos, Square(pos.0 - 2 - 8), None),
+                            ] {
+                                if pot_m.dest.0 > 63 {
+                                    continue;
+                                } else if (pos.get_file().unwrap().to_usize() as i32 - pot_m.dest.get_file().unwrap().to_usize() as i32).abs() > 3 {
+                                    continue;
+                                }
+
+                                if let Some(m) = self.get(pot_m.dest) {
+                                    if m.color != piece.color {
+                                        moves.push(pot_m);
+                                    }
+                                } else {
+                                    moves.push(pot_m);
+                                }
+                            }
+                        }
                     }
                 }
             }

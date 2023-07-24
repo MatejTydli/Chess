@@ -57,7 +57,7 @@ impl ChessMove {
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        ChessMove::create(board, piece, mul, promo, Square::down, Square::up)
+        ChessMove::create(board, piece, mul, promo, Square::up, Square::down)
     }
 
     /// Shortcut function for creating moves on board.
@@ -67,7 +67,7 @@ impl ChessMove {
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        ChessMove::create(board, piece, mul, promo, Square::up, Square::down)
+        ChessMove::create(board, piece, mul, promo, Square::down, Square::up)
     }
 
     /// Shortcut function for creating moves on board.
@@ -77,7 +77,7 @@ impl ChessMove {
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        ChessMove::create(board, piece, mul, promo, Square::left, Square::right)
+        ChessMove::create(board, piece, mul, promo, Square::right, Square::left)
     }
 
     /// Shortcut function for creating moves on board.
@@ -87,7 +87,7 @@ impl ChessMove {
         mul: i32,
         promo: Option<PieceType>,
     ) -> Result<ChessMove, &'static str> {
-        ChessMove::create(board, piece, mul, promo, Square::right, Square::left)
+        ChessMove::create(board, piece, mul, promo, Square::left, Square::right)
     }
 
     /// Shortcut function for creating moves on board.
@@ -102,8 +102,8 @@ impl ChessMove {
             piece,
             mul,
             promo,
-            Square::down_left,
             Square::up_right,
+            Square::down_left,
         )
     }
 
@@ -119,8 +119,8 @@ impl ChessMove {
             piece,
             mul,
             promo,
-            Square::down_right,
             Square::up_left,
+            Square::down_right,
         )
     }
 
@@ -136,8 +136,8 @@ impl ChessMove {
             piece,
             mul,
             promo,
-            Square::up_left,
             Square::down_right,
+            Square::up_left,
         )
     }
 
@@ -153,8 +153,8 @@ impl ChessMove {
             piece,
             mul,
             promo,
-            Square::up_right,
             Square::down_left,
+            Square::up_right,
         )
     }
 }

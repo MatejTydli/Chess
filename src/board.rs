@@ -26,8 +26,8 @@ impl Board {
             PieceType::Rook,
             PieceType::Knight,
             PieceType::Bishop,
-            PieceType::Queen,
             PieceType::King,
+            PieceType::Queen,
             PieceType::Bishop,
             PieceType::Knight,
             PieceType::Rook,
@@ -70,7 +70,6 @@ impl Board {
     /// Deafult pawn_promo is set to Queen.
     pub fn empty(turn: Color) -> Self {
         let pos = [[None; 8]; 8];
-
         Board {
             pos,
             history: Vec::new(),

@@ -55,8 +55,6 @@ impl Board {
 
             if let Some(piece) = piece_raw {
                 if mask.compare(piece.color) {
-                    // let opponent_color = piece.color.inverse(); also commented out in color.rs
-
                     match piece.piece_type {
                         crate::PieceType::Pawn => {
                             // decide if pawn stand on sevent or second rank (depends on color)
@@ -107,6 +105,7 @@ impl Board {
                                     }
                                 {
                                     // # pawn takes en passatns
+                                    // left check must be right idk why
                                     if let Ok(left_check) =
                                         ChessMove::right(self, piece_raw, 1, promo)
                                     {
@@ -140,6 +139,7 @@ impl Board {
                                     }
                                 {
                                     // # pawn takes en passatns
+                                    // right check must be left idk why
                                     if let Ok(right_check) =
                                         ChessMove::left(self, piece_raw, 1, promo)
                                     {
@@ -159,13 +159,77 @@ impl Board {
                                 }
                             }
                         }
-                        _ => {} /*
-                                crate::PieceType::Knight => todo!(),
-                                crate::PieceType::Bishop => todo!(),
-                                crate::PieceType::Rook => todo!(),
-                                crate::PieceType::Queen => todo!(),
-                                crate::PieceType::King => todo!(),
-                                */
+                        crate::PieceType::Rook => {
+                            // up
+                            for i in 1..=8 {
+                                if let Ok(pot_up) = ChessMove::up(self, piece_raw, i as i32, None) {
+                                    if let Some(p) = self.get(pot_up.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_up);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_up);
+                                    }
+                                }
+                            }
+
+                            // down
+                            for i in 1..=8 {
+                                if let Ok(pot_down) =
+                                    ChessMove::down(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_down.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_down);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_down);
+                                    }
+                                }
+                            }
+
+                            // left
+                            for i in 1..=8 {
+                                if let Ok(pot_left) =
+                                    ChessMove::left(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_left.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_left);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_left);
+                                    }
+                                }
+                            }
+
+                            // right
+                            for i in 1..=8 {
+                                if let Ok(pot_right) =
+                                    ChessMove::right(self, piece_raw, i as i32, None)
+                                {
+                                    if let Some(p) = self.get(pot_right.dest) {
+                                        if p.color != piece.color {
+                                            moves.push(pot_right);
+                                        } else {
+                                            break;
+                                        }
+                                    } else {
+                                        moves.push(pot_right);
+                                    }
+                                }
+                            }
+                        }
+                        crate::PieceType::Bishop => continue,
+                        crate::PieceType::Queen => continue,
+                        crate::PieceType::King => continue,
+                        crate::PieceType::Knight => continue,
                     }
                 }
             }

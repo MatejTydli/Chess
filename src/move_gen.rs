@@ -438,22 +438,66 @@ impl Board {
                                     }
                                 }
                             }
+
+                            if piece.color == Color::White {
+                                if !self.king_moved_w {
+                                    // short castle
+                                    if !self.right_rook_moved_w {
+                                        if *self.get(Square::F1) == None
+                                            && *self.get(Square::G1) == None
+                                        {
+                                            moves.push(ChessMove::left(self, piece_raw, 2, None).unwrap());
+                                        }
+                                    }
+                                    // long castle
+                                    if !self.left_rook_moved_w {
+                                        if *self.get(Square::D1) == None
+                                            && *self.get(Square::C1) == None
+                                        {
+                                            moves.push(ChessMove::right(self, piece_raw, 2, None).unwrap());
+                                        }
+                                    }
+                                }
+                            } else {
+                                if !self.king_moved_b {
+                                    // short castle
+                                    if !self.right_rook_moved_b {
+                                        if *self.get(Square::F8) == None
+                                            && *self.get(Square::F8) == None
+                                        {
+                                            moves.push(ChessMove::right(self, piece_raw, 2, None).unwrap());
+                                        }
+                                    }
+                                    // long castle
+                                    if !self.left_rook_moved_b {
+                                        if *self.get(Square::D8) == None
+                                            && *self.get(Square::C8) == None
+                                        {
+                                            moves.push(ChessMove::left(self, piece_raw, 2, None).unwrap());
+                                        }
+                                    }
+                                }
+                            }
                         }
                         crate::PieceType::Knight => {
                             let pos = self.get_square(piece_raw).unwrap();
                             for pot_m in [
-                                ChessMove::new(pos, Square(pos.0 - 16 + 1), None),
-                                ChessMove::new(pos, Square(pos.0 - 16 - 1), None),
-                                ChessMove::new(pos, Square(pos.0 + 16 + 1), None),
-                                ChessMove::new(pos, Square(pos.0 + 16 - 1), None),
-                                ChessMove::new(pos, Square(pos.0 + 2 + 8), None),
-                                ChessMove::new(pos, Square(pos.0 + 2 - 8), None),
-                                ChessMove::new(pos, Square(pos.0 - 2 + 8), None),
-                                ChessMove::new(pos, Square(pos.0 - 2 - 8), None),
+                                ChessMove::new(pos, Square(pos.0 - 17), None),
+                                ChessMove::new(pos, Square(pos.0 - 15), None),
+                                ChessMove::new(pos, Square(pos.0 + 17), None),
+                                ChessMove::new(pos, Square(pos.0 + 15), None),
+                                ChessMove::new(pos, Square(pos.0 + 10), None),
+                                ChessMove::new(pos, Square(pos.0 - 6), None),
+                                ChessMove::new(pos, Square(pos.0 + 6), None),
+                                ChessMove::new(pos, Square(pos.0 - 10), None),
                             ] {
                                 if pot_m.dest.0 > 63 {
                                     continue;
-                                } else if (pos.get_file().unwrap().to_usize() as i32 - pot_m.dest.get_file().unwrap().to_usize() as i32).abs() > 3 {
+                                } else if (pos.get_file().unwrap().to_usize() as i32
+                                    - pot_m.dest.get_file().unwrap().to_usize() as i32)
+                                    .abs()
+                                    > 3
+                                {
                                     continue;
                                 }
 

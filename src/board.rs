@@ -11,7 +11,6 @@ use crate::Square;
 #[derive(Clone, Debug, PartialEq)]
 pub struct Board {
     pos: [[Option<Piece>; 8]; 8],
-    turn: Color,
     pub(crate) king_moved_w: bool,
     pub(crate) left_rook_moved_w: bool,
     pub(crate) right_rook_moved_w: bool,
@@ -79,7 +78,6 @@ impl Board {
         Board {
             pos,
             history: Vec::new(),
-            turn,
             pawn_promo: PieceType::Queen,
             king_moved_w: false,
             left_rook_moved_w: false,
@@ -163,6 +161,12 @@ impl Board {
 
     //     all.into_iter()
     // }
+
+    /// Clear history except last record if is there beacause, en passant move.
+    /// Draw rules maybe got a little bit broken. 
+    pub(crate) fn clear_history(&mut self) {
+        self.history.clear();
+    }
 
     /// Make move and save new position to history.
     /// Also handling exceptions like en passant, castle and apwn promotinon.

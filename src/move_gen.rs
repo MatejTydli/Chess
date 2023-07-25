@@ -42,7 +42,38 @@ impl Mask {
 impl Board {
     /// Create valid moves from [Board], depends on [Mask].
     pub fn gen_moves(&self, mask: Mask) -> Vec<ChessMove> {
-        self.gen_moves_raw(mask) // only for testing, later added check (and mate) logic here
+        let mut moves = Vec::new();
+
+        let mut board = self.clone();
+        board.clear_history();
+
+        for mv in self.gen_moves_raw(mask) {
+            let mut test_board = board.clone();
+            test_board.make_move(mv);
+
+            let mut check = false;
+            for tmv in test_board.gen_moves_raw(mask) {
+                if let Some(p) = test_board.get(tmv.dest) {
+                    if p.piece_type == PieceType::King {
+                        check = true;
+                        break;
+                    }
+                }
+            }
+
+            if !check {
+                moves.push(mv);
+            }
+        }
+
+        let mut moves_rm_dp = Vec::new();
+        for m in moves {
+            if !moves_rm_dp.contains(&m) {
+                moves_rm_dp.push(m);
+            }
+        }
+        
+        moves_rm_dp
     }
 
     /// Create valid moves from [Board], but not take checks in to account. Depends on [Mask].
@@ -161,8 +192,8 @@ impl Board {
                         }
                         crate::PieceType::Rook => {
                             // up
-                            for i in 1..=8 {
-                                if let Ok(pot_up) = ChessMove::up(self, piece_raw, i as i32, None) {
+                            for ri in 1..=8 {
+                                if let Ok(pot_up) = ChessMove::up(self, piece_raw, ri as i32, None) {
                                     if let Some(p) = self.get(pot_up.dest) {
                                         if p.color != piece.color {
                                             moves.push(pot_up);
@@ -175,9 +206,9 @@ impl Board {
                                 }
                             }
                             // down
-                            for i in 1..=8 {
+                            for rk in 1..=8 {
                                 if let Ok(pot_down) =
-                                    ChessMove::down(self, piece_raw, i as i32, None)
+                                    ChessMove::down(self, piece_raw, rk as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_down.dest) {
                                         if p.color != piece.color {
@@ -191,9 +222,9 @@ impl Board {
                                 }
                             }
                             // left
-                            for i in 1..=8 {
+                            for rl in 1..=8 {
                                 if let Ok(pot_left) =
-                                    ChessMove::left(self, piece_raw, i as i32, None)
+                                    ChessMove::left(self, piece_raw, rl as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_left.dest) {
                                         if p.color != piece.color {
@@ -207,9 +238,9 @@ impl Board {
                                 }
                             }
                             // right
-                            for i in 1..=8 {
+                            for rm in 1..=8 {
                                 if let Ok(pot_right) =
-                                    ChessMove::right(self, piece_raw, i as i32, None)
+                                    ChessMove::right(self, piece_raw, rm as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_right.dest) {
                                         if p.color != piece.color {
@@ -225,9 +256,9 @@ impl Board {
                         }
                         crate::PieceType::Bishop => {
                             // up left
-                            for i in 1..=8 {
+                            for bi in 1..=8 {
                                 if let Ok(pot_up_left) =
-                                    ChessMove::up_left(self, piece_raw, i as i32, None)
+                                    ChessMove::up_left(self, piece_raw, bi as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_up_left.dest) {
                                         if p.color != piece.color {
@@ -241,9 +272,9 @@ impl Board {
                                 }
                             }
                             // up right
-                            for i in 1..=8 {
+                            for bl in 1..=8 {
                                 if let Ok(pot_up_right) =
-                                    ChessMove::up_right(self, piece_raw, i as i32, None)
+                                    ChessMove::up_right(self, piece_raw, bl as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_up_right.dest) {
                                         if p.color != piece.color {
@@ -257,9 +288,9 @@ impl Board {
                                 }
                             }
                             // down left
-                            for i in 1..=8 {
+                            for bk in 1..=8 {
                                 if let Ok(pot_down_left) =
-                                    ChessMove::down_left(self, piece_raw, i as i32, None)
+                                    ChessMove::down_left(self, piece_raw, bk as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_down_left.dest) {
                                         if p.color != piece.color {
@@ -273,9 +304,9 @@ impl Board {
                                 }
                             }
                             // down right
-                            for i in 1..=8 {
+                            for bl in 1..=8 {
                                 if let Ok(pot_down_right) =
-                                    ChessMove::right(self, piece_raw, i as i32, None)
+                                    ChessMove::right(self, piece_raw, bl as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_down_right.dest) {
                                         if p.color != piece.color {
@@ -305,9 +336,9 @@ impl Board {
                                 }
                             }
                             // down
-                            for i in 1..=8 {
+                            for j in 1..=8 {
                                 if let Ok(pot_down) =
-                                    ChessMove::down(self, piece_raw, i as i32, None)
+                                    ChessMove::down(self, piece_raw, j as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_down.dest) {
                                         if p.color != piece.color {
@@ -321,9 +352,9 @@ impl Board {
                                 }
                             }
                             // left
-                            for i in 1..=8 {
+                            for k in 1..=8 {
                                 if let Ok(pot_left) =
-                                    ChessMove::left(self, piece_raw, i as i32, None)
+                                    ChessMove::left(self, piece_raw, k as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_left.dest) {
                                         if p.color != piece.color {
@@ -337,9 +368,9 @@ impl Board {
                                 }
                             }
                             // right
-                            for i in 1..=8 {
+                            for l in 1..=8 {
                                 if let Ok(pot_right) =
-                                    ChessMove::right(self, piece_raw, i as i32, None)
+                                    ChessMove::right(self, piece_raw, l as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_right.dest) {
                                         if p.color != piece.color {
@@ -353,9 +384,9 @@ impl Board {
                                 }
                             }
                             // up left
-                            for i in 1..=8 {
+                            for m in 1..=8 {
                                 if let Ok(pot_up_left) =
-                                    ChessMove::up_left(self, piece_raw, i as i32, None)
+                                    ChessMove::up_left(self, piece_raw, m as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_up_left.dest) {
                                         if p.color != piece.color {
@@ -369,9 +400,9 @@ impl Board {
                                 }
                             }
                             // up right
-                            for i in 1..=8 {
+                            for o in 1..=8 {
                                 if let Ok(pot_up_right) =
-                                    ChessMove::up_right(self, piece_raw, i as i32, None)
+                                    ChessMove::up_right(self, piece_raw, o as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_up_right.dest) {
                                         if p.color != piece.color {
@@ -385,9 +416,9 @@ impl Board {
                                 }
                             }
                             // down left
-                            for i in 1..=8 {
+                            for p in 1..=8 {
                                 if let Ok(pot_down_left) =
-                                    ChessMove::down_left(self, piece_raw, i as i32, None)
+                                    ChessMove::down_left(self, piece_raw, p as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_down_left.dest) {
                                         if p.color != piece.color {
@@ -401,9 +432,9 @@ impl Board {
                                 }
                             }
                             // down right
-                            for i in 1..=8 {
+                            for q in 1..=8 {
                                 if let Ok(pot_down_right) =
-                                    ChessMove::right(self, piece_raw, i as i32, None)
+                                    ChessMove::right(self, piece_raw, q as i32, None)
                                 {
                                     if let Some(p) = self.get(pot_down_right.dest) {
                                         if p.color != piece.color {
@@ -446,7 +477,9 @@ impl Board {
                                         if *self.get(Square::F1) == None
                                             && *self.get(Square::G1) == None
                                         {
-                                            moves.push(ChessMove::left(self, piece_raw, 2, None).unwrap());
+                                            moves.push(
+                                                ChessMove::left(self, piece_raw, 2, None).unwrap(),
+                                            );
                                         }
                                     }
                                     // long castle
@@ -454,7 +487,9 @@ impl Board {
                                         if *self.get(Square::D1) == None
                                             && *self.get(Square::C1) == None
                                         {
-                                            moves.push(ChessMove::right(self, piece_raw, 2, None).unwrap());
+                                            moves.push(
+                                                ChessMove::right(self, piece_raw, 2, None).unwrap(),
+                                            );
                                         }
                                     }
                                 }
@@ -465,7 +500,9 @@ impl Board {
                                         if *self.get(Square::F8) == None
                                             && *self.get(Square::F8) == None
                                         {
-                                            moves.push(ChessMove::right(self, piece_raw, 2, None).unwrap());
+                                            moves.push(
+                                                ChessMove::right(self, piece_raw, 2, None).unwrap(),
+                                            );
                                         }
                                     }
                                     // long castle
@@ -473,7 +510,9 @@ impl Board {
                                         if *self.get(Square::D8) == None
                                             && *self.get(Square::C8) == None
                                         {
-                                            moves.push(ChessMove::left(self, piece_raw, 2, None).unwrap());
+                                            moves.push(
+                                                ChessMove::left(self, piece_raw, 2, None).unwrap(),
+                                            );
                                         }
                                     }
                                 }
@@ -482,20 +521,22 @@ impl Board {
                         crate::PieceType::Knight => {
                             let pos = self.get_square(piece_raw).unwrap();
                             for pot_m in [
-                                ChessMove::new(pos, Square(pos.0 - 17), None),
-                                ChessMove::new(pos, Square(pos.0 - 15), None),
+                                ChessMove::new(pos, Square(pos.0.abs_diff(17)), None),
+                                ChessMove::new(pos, Square(pos.0.abs_diff(15)), None),
                                 ChessMove::new(pos, Square(pos.0 + 17), None),
                                 ChessMove::new(pos, Square(pos.0 + 15), None),
                                 ChessMove::new(pos, Square(pos.0 + 10), None),
-                                ChessMove::new(pos, Square(pos.0 - 6), None),
+                                ChessMove::new(pos, Square(pos.0.abs_diff(6)), None),
                                 ChessMove::new(pos, Square(pos.0 + 6), None),
-                                ChessMove::new(pos, Square(pos.0 - 10), None),
+                                ChessMove::new(pos, Square(pos.0.abs_diff(10)), None),
                             ] {
                                 if pot_m.dest.0 > 63 {
                                     continue;
-                                } else if (pos.get_file().unwrap().to_usize() as i32
-                                    - pot_m.dest.get_file().unwrap().to_usize() as i32)
-                                    .abs()
+                                } else if pos
+                                    .get_file()
+                                    .unwrap()
+                                    .to_usize()
+                                    .abs_diff(pot_m.dest.get_file().unwrap().to_usize())
                                     > 3
                                 {
                                     continue;

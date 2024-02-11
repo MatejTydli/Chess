@@ -13,10 +13,9 @@
 - **Finished**
 
 ## This is
-- **Chess lib focused on simplicity**
+- **Chess lib**
 - Chess move gen
 - Completely writen in rust by one student as *home project*
-- In early stage of development
 
 ## Limitation
 - You can't create or modify your own pieces
@@ -34,6 +33,5 @@
 ```rust
 ```
 
-## Credit
-**ME *lol*!**
+## Inspiration
 Big inspiration from this rust chess library: https://github.com/jordanbray/chess

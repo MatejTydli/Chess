@@ -1,5 +1,6 @@
 //! The moust interesting and the moust complex(spaghetti), part of the library.
 
+use crate::board;
 use crate::Board;
 use crate::ChessMove;
 use crate::Color;
@@ -40,6 +41,33 @@ impl Mask {
 }
 
 impl Board {
+    /// Helper for creating [ChessMove]s inside gen_moves_raw.
+    pub(crate) fn gen_moves_raw_temp(
+        &self,
+        piece_raw: &Option<Piece>,
+        piece: &Piece,
+        moves: &mut Vec<ChessMove>,
+        createfn: fn(
+            &Board,
+            &Option<Piece>,
+            i32,
+            Option<PieceType>,
+        ) -> Result<ChessMove, &'static str>,
+    ) {
+        for m in 1..=8 {
+            if let Ok(pot) = createfn(self, piece_raw, m as i32, None) {
+                if let Some(p) = self.get(pot.dest) {
+                    if p.color != piece.color {
+                        moves.push(pot);
+                    }
+                    break;
+                } else {
+                    moves.push(pot);
+                }
+            }
+        }
+    }
+
     /// Create valid moves from [Board], depends on [Mask].
     pub fn gen_moves(&self, mask: Mask) -> Vec<ChessMove> {
         let mut moves = Vec::new();
@@ -72,7 +100,7 @@ impl Board {
                 moves_rm_dp.push(m);
             }
         }
-        
+
         moves_rm_dp
     }
 
@@ -191,262 +219,26 @@ impl Board {
                             }
                         }
                         crate::PieceType::Rook => {
-                            // up
-                            for ri in 1..=8 {
-                                if let Ok(pot_up) = ChessMove::up(self, piece_raw, ri as i32, None) {
-                                    if let Some(p) = self.get(pot_up.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_up);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_up);
-                                    }
-                                }
-                            }
-                            // down
-                            for rk in 1..=8 {
-                                if let Ok(pot_down) =
-                                    ChessMove::down(self, piece_raw, rk as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_down.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_down);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_down);
-                                    }
-                                }
-                            }
-                            // left
-                            for rl in 1..=8 {
-                                if let Ok(pot_left) =
-                                    ChessMove::left(self, piece_raw, rl as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_left.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_left);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_left);
-                                    }
-                                }
-                            }
-                            // right
-                            for rm in 1..=8 {
-                                if let Ok(pot_right) =
-                                    ChessMove::right(self, piece_raw, rm as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_right.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_right);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_right);
-                                    }
-                                }
-                            }
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::up);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::down);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::left);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::right);
                         }
                         crate::PieceType::Bishop => {
-                            // up left
-                            for bi in 1..=8 {
-                                if let Ok(pot_up_left) =
-                                    ChessMove::up_left(self, piece_raw, bi as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_up_left.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_up_left);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_up_left);
-                                    }
-                                }
-                            }
-                            // up right
-                            for bl in 1..=8 {
-                                if let Ok(pot_up_right) =
-                                    ChessMove::up_right(self, piece_raw, bl as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_up_right.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_up_right);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_up_right);
-                                    }
-                                }
-                            }
-                            // down left
-                            for bk in 1..=8 {
-                                if let Ok(pot_down_left) =
-                                    ChessMove::down_left(self, piece_raw, bk as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_down_left.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_down_left);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_down_left);
-                                    }
-                                }
-                            }
-                            // down right
-                            for bl in 1..=8 {
-                                if let Ok(pot_down_right) =
-                                    ChessMove::right(self, piece_raw, bl as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_down_right.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_down_right);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_down_right);
-                                    }
-                                }
-                            }
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::up_left);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::up_right);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::down_left);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::down_right);
                         }
                         crate::PieceType::Queen => {
-                            // up
-                            for i in 1..=8 {
-                                if let Ok(pot_up) = ChessMove::up(self, piece_raw, i as i32, None) {
-                                    if let Some(p) = self.get(pot_up.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_up);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_up);
-                                    }
-                                }
-                            }
-                            // down
-                            for j in 1..=8 {
-                                if let Ok(pot_down) =
-                                    ChessMove::down(self, piece_raw, j as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_down.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_down);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_down);
-                                    }
-                                }
-                            }
-                            // left
-                            for k in 1..=8 {
-                                if let Ok(pot_left) =
-                                    ChessMove::left(self, piece_raw, k as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_left.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_left);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_left);
-                                    }
-                                }
-                            }
-                            // right
-                            for l in 1..=8 {
-                                if let Ok(pot_right) =
-                                    ChessMove::right(self, piece_raw, l as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_right.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_right);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_right);
-                                    }
-                                }
-                            }
-                            // up left
-                            for m in 1..=8 {
-                                if let Ok(pot_up_left) =
-                                    ChessMove::up_left(self, piece_raw, m as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_up_left.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_up_left);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_up_left);
-                                    }
-                                }
-                            }
-                            // up right
-                            for o in 1..=8 {
-                                if let Ok(pot_up_right) =
-                                    ChessMove::up_right(self, piece_raw, o as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_up_right.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_up_right);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_up_right);
-                                    }
-                                }
-                            }
-                            // down left
-                            for p in 1..=8 {
-                                if let Ok(pot_down_left) =
-                                    ChessMove::down_left(self, piece_raw, p as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_down_left.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_down_left);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_down_left);
-                                    }
-                                }
-                            }
-                            // down right
-                            for q in 1..=8 {
-                                if let Ok(pot_down_right) =
-                                    ChessMove::right(self, piece_raw, q as i32, None)
-                                {
-                                    if let Some(p) = self.get(pot_down_right.dest) {
-                                        if p.color != piece.color {
-                                            moves.push(pot_down_right);
-                                        } else {
-                                            break;
-                                        }
-                                    } else {
-                                        moves.push(pot_down_right);
-                                    }
-                                }
-                            }
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::up);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::down);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::left);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::right);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::up_left);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::up_right);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::down_left);
+                            self.gen_moves_raw_temp(piece_raw, piece, &mut moves, ChessMove::down_right);
                         }
                         crate::PieceType::King => {
                             for m in [

@@ -41,4 +41,18 @@ impl Rank {
             Self::Eighth => 0,
         }
     }
+
+    /// Converts [Rank] to [String].
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::First => 1.to_string(),
+            Self::Second => 2.to_string(),
+            Self::Third => 3.to_string(),
+            Self::Fourth => 4.to_string(),
+            Self::Fifth => 5.to_string(),
+            Self::Sixth => 6.to_string(),
+            Self::Seventh => 7.to_string(),
+            Self::Eighth => 8.to_string(),
+        }
+    }
 }

@@ -8,7 +8,7 @@ use crate::Rank;
 
 /// Represent a index on the [Board].
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Square(pub(crate) usize);
+pub struct Square(pub/*(crate)*/ usize);
 
 impl Square {
     /// Possible way to create a [Square].
